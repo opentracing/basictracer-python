@@ -61,8 +61,8 @@ class TextPropagator(object):
         self.tracer = tracer
 
     def inject(self, span, carrier):
-        carrier[field_name_trace_id] = base64.b64encode(str(span.raw.context.trace_id))
-        carrier[field_name_span_id] = base64.b64encode(str(span.raw.context.span_id))
+        carrier[field_name_trace_id] = '{:x}'.format(span.raw.context.trace_id)
+        carrier[field_name_span_id] = '{:x}'.format(span.raw.context.span_id)
         carrier[field_name_sampled] = str(span.raw.context.sampled).lower()
         if span.raw.baggage is not None:
             for k in span.raw.baggage:
@@ -76,10 +76,10 @@ class TextPropagator(object):
             v = carrier[k]
             k = k.lower()
             if k == field_name_span_id:
-                span_id = int(base64.b64decode(v))
+                span_id = int(v, 16)
                 count += 1
             elif k == field_name_trace_id:
-                trace_id = int(base64.b64decode(v))
+                trace_id = int(v, 16)
                 count += 1
             elif k == field_name_sampled:
                 if v == str(True).lower():
