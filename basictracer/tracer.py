@@ -5,7 +5,7 @@ from opentracing import UnsupportedFormatException
 from .context import Context
 from .propagation import BinaryPropagator, TextPropagator
 from .recorder import SpanRecorder, DefaultSampler
-from .span import BasicSpan, RawSpan
+from .span import BasicSpan
 from .util import generate_id
 
 class BasicTracer(Tracer):
@@ -24,21 +24,22 @@ class BasicTracer(Tracer):
             start_time=None):
         start_time = time.time() if start_time is None else start_time
         context = Context(span_id=generate_id())
-        raw = RawSpan(operation_name=operation_name, tags=tags,
+        sp = BasicSpan(self, operation_name=operation_name, tags=tags,
                 context=context,
                 start_time=start_time)
 
         if parent is None:
-            raw.context.trace_id = generate_id()
-            raw.context.sampled = self.sampler.sampled(raw.context.trace_id)
+            sp.context.trace_id = generate_id()
+            sp.context.sampled = self.sampler.sampled(sp.context.trace_id)
         else:
-            raw.context.trace_id = parent.raw.context.trace_id
-            raw.context.parent_id = parent.raw.context.span_id
-            raw.context.sampled = parent.raw.context.sampled
-            if parent.raw.baggage is not None:
-                raw.baggage = parent.raw.baggage.copy()
+            sp.context.trace_id = parent.context.trace_id
+            sp.context.parent_id = parent.context.span_id
+            sp.context.sampled = parent.context.sampled
+            if parent.baggage is not None:
+                sp.baggage = parent.baggage.copy()
 
-        return BasicSpan(self, raw)
+        return sp
+
 
     def inject(self, span, format, carrier):
         if format == Format.BINARY:
@@ -58,7 +59,7 @@ class BasicTracer(Tracer):
 
     def record(self, span):
         self.recorder.record_span(span)
-        
+
 class NoopRecorder(SpanRecorder):
     def record_span(self, span):
         pass

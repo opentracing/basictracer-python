@@ -5,7 +5,7 @@ import time
 import struct
 from opentracing import InvalidCarrierException, TraceCorruptedException
 from .context import Context
-from .span import BasicSpan, RawSpan
+from .span import BasicSpan
 from .wire_pb2 import TracerState
 from .util import generate_id
 
@@ -19,12 +19,12 @@ class BinaryPropagator(object):
         if type(carrier) is not bytearray:
             raise InvalidCarrierException()
         state = TracerState()
-        state.trace_id = span.raw.context.trace_id
-        state.span_id = span.raw.context.span_id
-        state.sampled = span.raw.context.sampled
-        if span.raw.baggage is not None:
-            for key in span.raw.baggage:
-                state.baggage_items[key] = span.raw.baggage[key]
+        state.trace_id = span.context.trace_id
+        state.span_id = span.context.span_id
+        state.sampled = span.context.sampled
+        if span.baggage is not None:
+            for key in span.baggage:
+                state.baggage_items[key] = span.baggage[key]
 
         # The binary format is {uint32}{protobuf} using big-endian for the uint
         carrier.extend(struct.pack(">I", state.ByteSize()))
@@ -39,14 +39,14 @@ class BinaryPropagator(object):
         for k in state.baggage_items:
             baggage[k] = state.baggage_items[k]
 
-        raw = RawSpan(operation_name=operation_name,
+        return BasicSpan(self.tracer,
+                operation_name=operation_name,
                 baggage=baggage,
                 start_time=time.time(),
                 context=Context(span_id=generate_id(),
                     parent_id=state.span_id,
                     trace_id=state.trace_id,
                     sampled=state.sampled))
-        return BasicSpan(self.tracer, raw)
 
 
 prefix_tracer_state = 'ot-tracer-'
@@ -61,12 +61,12 @@ class TextPropagator(object):
         self.tracer = tracer
 
     def inject(self, span, carrier):
-        carrier[field_name_trace_id] = '{:x}'.format(span.raw.context.trace_id)
-        carrier[field_name_span_id] = '{:x}'.format(span.raw.context.span_id)
-        carrier[field_name_sampled] = str(span.raw.context.sampled).lower()
-        if span.raw.baggage is not None:
-            for k in span.raw.baggage:
-                carrier[prefix_baggage+k] = span.raw.baggage[k]
+        carrier[field_name_trace_id] = '{:x}'.format(span.context.trace_id)
+        carrier[field_name_span_id] = '{:x}'.format(span.context.span_id)
+        carrier[field_name_sampled] = str(span.context.sampled).lower()
+        if span.baggage is not None:
+            for k in span.baggage:
+                carrier[prefix_baggage+k] = span.baggage[k]
 
     def join(self, operation_name, carrier):
         count = 0
@@ -95,11 +95,11 @@ class TextPropagator(object):
         if count != field_count:
             raise TraceCorruptedException()
 
-        raw = RawSpan(operation_name=operation_name,
+        return BasicSpan(self.tracer,
+                operation_name=operation_name,
                 baggage=baggage,
                 start_time=time.time(),
                 context=Context(span_id=generate_id(),
                     parent_id=span_id,
                     trace_id=trace_id,
                     sampled=sampled))
-        return BasicSpan(self.tracer, raw)

@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 
 class SpanRecorder(object):
-    """ SpanRecorder's job is record and report RawSpan's
+    """ SpanRecorder's job is record and report a BasicSpan.
     """
 
     __metaclass__ = ABCMeta

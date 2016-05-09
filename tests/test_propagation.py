@@ -14,8 +14,8 @@ def test_propagation():
 
         child = tracer.join(opname, format, carrier)
 
-        assert child.raw.context.trace_id == sp.raw.context.trace_id
-        assert child.raw.context.parent_id == sp.raw.context.span_id
-        assert child.raw.context.sampled == sp.raw.context.sampled
-        assert child.raw.baggage == sp.raw.baggage
+        assert child.context.trace_id == sp.context.trace_id
+        assert child.context.parent_id == sp.context.span_id
+        assert child.context.sampled == sp.context.sampled
+        assert child.baggage == sp.baggage
 
