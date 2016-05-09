@@ -4,14 +4,15 @@ from opentracing import Format, Tracer
 from opentracing import UnsupportedFormatException
 from .context import Context
 from .propagation import BinaryPropagator, TextPropagator
-from .recorder import SpanRecorder
+from .recorder import SpanRecorder, DefaultSampler
 from .span import BasicSpan, RawSpan
 from .util import generate_id
 
 class BasicTracer(Tracer):
 
-    def __init__(self, recorder=None):
+    def __init__(self, recorder=None, sampler=None):
         self.recorder = NoopRecorder() if recorder is None else recorder
+        self.sampler = DefaultSampler(1) if sampler is None else sampler
         self._binary_propagator = BinaryPropagator(self)
         self._text_propagator = TextPropagator(self)
         return
@@ -21,7 +22,6 @@ class BasicTracer(Tracer):
             parent=None,
             tags=None,
             start_time=None):
-
         start_time = time.time() if start_time is None else start_time
         context = Context(span_id=generate_id())
         raw = RawSpan(operation_name=operation_name, tags=tags,
@@ -29,7 +29,8 @@ class BasicTracer(Tracer):
                 start_time=start_time)
 
         if parent is None:
-            raw.context.trace_id=generate_id()
+            raw.context.trace_id = generate_id()
+            raw.context.sampled = self.sampler.sampled(raw.context.trace_id)
         else:
             raw.context.trace_id = parent.raw.context.trace_id
             raw.context.parent_id = parent.raw.context.span_id
@@ -55,6 +56,9 @@ class BasicTracer(Tracer):
         else:
             raise UnsupportedFormatException()
 
+    def record(self, span):
+        self.recorder.record_span(span)
+        
 class NoopRecorder(SpanRecorder):
     def record_span(self, span):
         pass
