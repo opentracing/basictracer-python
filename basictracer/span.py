@@ -15,7 +15,6 @@ class BasicSpan(Span):
     def __init__(self, tracer,
             operation_name=None,
             context=None,
-            baggage=None,
             tags=None,
             sampled=False,
             start_time=None):
@@ -29,7 +28,6 @@ class BasicSpan(Span):
         self.tags = tags
         self.duration = -1
         self.logs = []
-        self.baggage = baggage
 
     def set_operation_name(self, operation_name):
         with self._lock:
@@ -55,25 +53,25 @@ class BasicSpan(Span):
 
     def set_baggage_item(self, key, value):
         with self._lock:
-            if self.baggage is None:
-                self.baggage = {}
+            if self.context.baggage is None:
+                self.context.baggage = {}
 
             canonicalKey = canonicalize_baggage_key(key)
             if canonicalKey is not None:
                 key = canonicalKey
 
-            self.baggage[key] = value
+            self.context.baggage[key] = value
         return super(BasicSpan, self).set_baggage_item(key, value)
 
 
     def get_baggage_item(self, key):
         with self._lock:
-            if self.baggage is None:
+            if self.context.baggage is None:
                 return None
             canonicalKey = canonicalize_baggage_key(key)
             if canonicalKey is not None:
                 key = canonicalKey
-        return self.baggage.get(key, None)
+        return self.context.baggage.get(key, None)
 
     def finish(self, finish_time=None):
         with self._lock:

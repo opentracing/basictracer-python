@@ -35,8 +35,8 @@ class BasicTracer(Tracer):
             sp.context.trace_id = parent.context.trace_id
             sp.context.parent_id = parent.context.span_id
             sp.context.sampled = parent.context.sampled
-            if parent.baggage is not None:
-                sp.baggage = parent.baggage.copy()
+            if parent.context.baggage is not None:
+                sp.context.baggage = parent.context.baggage.copy()
 
         return sp
 

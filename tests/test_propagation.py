@@ -17,5 +17,5 @@ def test_propagation():
         assert child.context.trace_id == sp.context.trace_id
         assert child.context.parent_id == sp.context.span_id
         assert child.context.sampled == sp.context.sampled
-        assert child.baggage == sp.baggage
+        assert child.context.baggage == sp.context.baggage
 

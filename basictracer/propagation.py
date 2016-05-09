@@ -22,9 +22,9 @@ class BinaryPropagator(object):
         state.trace_id = span.context.trace_id
         state.span_id = span.context.span_id
         state.sampled = span.context.sampled
-        if span.baggage is not None:
-            for key in span.baggage:
-                state.baggage_items[key] = span.baggage[key]
+        if span.context.baggage is not None:
+            for key in span.context.baggage:
+                state.baggage_items[key] = span.context.baggage[key]
 
         # The binary format is {uint32}{protobuf} using big-endian for the uint
         carrier.extend(struct.pack(">I", state.ByteSize()))
@@ -41,11 +41,11 @@ class BinaryPropagator(object):
 
         return BasicSpan(self.tracer,
                 operation_name=operation_name,
-                baggage=baggage,
                 start_time=time.time(),
                 context=Context(span_id=generate_id(),
                     parent_id=state.span_id,
                     trace_id=state.trace_id,
+                    baggage=baggage,
                     sampled=state.sampled))
 
 
@@ -64,9 +64,9 @@ class TextPropagator(object):
         carrier[field_name_trace_id] = '{:x}'.format(span.context.trace_id)
         carrier[field_name_span_id] = '{:x}'.format(span.context.span_id)
         carrier[field_name_sampled] = str(span.context.sampled).lower()
-        if span.baggage is not None:
-            for k in span.baggage:
-                carrier[prefix_baggage+k] = span.baggage[k]
+        if span.context.baggage is not None:
+            for k in span.context.baggage:
+                carrier[prefix_baggage+k] = span.context.baggage[k]
 
     def join(self, operation_name, carrier):
         count = 0
@@ -97,9 +97,9 @@ class TextPropagator(object):
 
         return BasicSpan(self.tracer,
                 operation_name=operation_name,
-                baggage=baggage,
                 start_time=time.time(),
                 context=Context(span_id=generate_id(),
                     parent_id=span_id,
                     trace_id=trace_id,
+                    baggage=baggage,
                     sampled=sampled))
