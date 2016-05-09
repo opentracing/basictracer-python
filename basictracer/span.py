@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 
+from threading import Lock
 import time
 import re
 
@@ -8,63 +9,68 @@ from .context import Context
 from .util import generate_id
 
 class BasicSpan(Span):
-    """BasicSpan extends opentracing.Span
+    """BasicSpan is a thread-safe implementation of opentracing.Span.
     """
 
     def __init__(self, tracer, raw):
-        """ Starts and returns a new basictracer span.
-
-        Extends the opentracing Span class.
-        """
         super(BasicSpan, self).__init__(tracer)
         self.raw = raw
+        self._lock = Lock()
 
     def set_operation_name(self, operation_name):
-        self.raw.operation_name = operation_name
+        with self._lock:
+            self.raw.operation_name = operation_name
         return super(BasicSpan, self).set_operation_name(operation_name)
 
     def set_tag(self, key, value):
-        if self.raw.tags is None:
-            self.raw.tags = {}
-        self.raw.tags[key] = value
+        with self._lock:
+            if self.raw.tags is None:
+                self.raw.tags = {}
+            self.raw.tags[key] = value
         return super(BasicSpan, self).set_tag(key, value)
 
     def log_event(self, event, payload=None):
-        self.raw.logs.append(LogData(event=event, payload=payload))
+        with self._lock:
+            self.raw.logs.append(LogData(event=event, payload=payload))
         return super(BasicSpan, self).log_event(event, payload)
 
     def log(self, **kwargs):
-        self.raw.logs.append(LogData(**kwargs))
+        with self._lock:
+            self.raw.logs.append(LogData(**kwargs))
         return super(BasicSpan, self).log(**kwargs)
 
     def set_baggage_item(self, key, value):
-        if self.raw.baggage is None:
-            self.raw.baggage = {}
+        with self._lock:
+            if self.raw.baggage is None:
+                self.raw.baggage = {}
 
-        canonicalKey = canonicalize_baggage_key(key)
-        if canonicalKey is not None:
-            key = canonicalKey
+            canonicalKey = canonicalize_baggage_key(key)
+            if canonicalKey is not None:
+                key = canonicalKey
 
-        self.raw.baggage[key] = value
+            self.raw.baggage[key] = value
         return super(BasicSpan, self).set_baggage_item(key, value)
 
 
     def get_baggage_item(self, key):
-        if self.raw.baggage is None:
-            return None
-        canonicalKey = canonicalize_baggage_key(key)
-        if canonicalKey is not None:
-            key = canonicalKey
+        with self._lock:
+            if self.raw.baggage is None:
+                return None
+            canonicalKey = canonicalize_baggage_key(key)
+            if canonicalKey is not None:
+                key = canonicalKey
         return self.raw.baggage.get(key, None)
 
     def finish(self, finish_time=None):
-        finish = time.time() if finish_time is None else finish_time
-        self.raw.duration = finish - self.raw.start_time
+        with self._lock:
+            finish = time.time() if finish_time is None else finish_time
+            self.raw.duration = finish - self.raw.start_time
 
-        self._tracer.recorder.record_span(self.raw)
+            self._tracer.record(self.raw)
 
 class RawSpan(object):
-    """ RawSpan holds all state associated with a (finished) Span. """
+    """ RawSpan holds all state associated with a (finished) Span.
+    """
 
     def __init__(self,
             operation_name=None,
@@ -93,7 +99,7 @@ class LogData(object):
 
 baggage_key_re = re.compile('^(?i)([a-z0-9][-a-z0-9]*)$')
 
-# TODO: Replace use of canonicalize_baggage_key when opentracing version is
+# TODO(bg): Replace use of canonicalize_baggage_key when opentracing version is
 # bumped and includes this.
 def canonicalize_baggage_key(key):
     """canonicalize_baggage_key returns a canonicalized key if it's valid.
