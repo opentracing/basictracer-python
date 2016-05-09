@@ -17,9 +17,9 @@ _sym_db = _symbol_database.Default()
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='wire.proto',
-  package='',
+  package='basictracer_go.wire',
   syntax='proto3',
-  serialized_pb=_b('\n\nwire.proto\"\xad\x01\n\x0bTracerState\x12\x10\n\x08trace_id\x18\x01 \x01(\x10\x12\x0f\n\x07span_id\x18\x02 \x01(\x10\x12\x0f\n\x07sampled\x18\x03 \x01(\x08\x12\x35\n\rbaggage_items\x18\x04 \x03(\x0b\x32\x1e.TracerState.BaggageItemsEntry\x1a\x33\n\x11\x42\x61ggageItemsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x42\x06Z\x04wireb\x06proto3')
+  serialized_pb=_b('\n\nwire.proto\x12\x13\x62\x61sictracer_go.wire\"\xc1\x01\n\x0bTracerState\x12\x10\n\x08trace_id\x18\x01 \x01(\x06\x12\x0f\n\x07span_id\x18\x02 \x01(\x06\x12\x0f\n\x07sampled\x18\x03 \x01(\x08\x12I\n\rbaggage_items\x18\x04 \x03(\x0b\x32\x32.basictracer_go.wire.TracerState.BaggageItemsEntry\x1a\x33\n\x11\x42\x61ggageItemsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x42\x06Z\x04wireb\x06proto3')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -28,20 +28,20 @@ _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 _TRACERSTATE_BAGGAGEITEMSENTRY = _descriptor.Descriptor(
   name='BaggageItemsEntry',
-  full_name='TracerState.BaggageItemsEntry',
+  full_name='basictracer_go.wire.TracerState.BaggageItemsEntry',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='key', full_name='TracerState.BaggageItemsEntry.key', index=0,
+      name='key', full_name='basictracer_go.wire.TracerState.BaggageItemsEntry.key', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='value', full_name='TracerState.BaggageItemsEntry.value', index=1,
+      name='value', full_name='basictracer_go.wire.TracerState.BaggageItemsEntry.value', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -59,40 +59,40 @@ _TRACERSTATE_BAGGAGEITEMSENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=137,
-  serialized_end=188,
+  serialized_start=178,
+  serialized_end=229,
 )
 
 _TRACERSTATE = _descriptor.Descriptor(
   name='TracerState',
-  full_name='TracerState',
+  full_name='basictracer_go.wire.TracerState',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='trace_id', full_name='TracerState.trace_id', index=0,
-      number=1, type=16, cpp_type=2, label=1,
+      name='trace_id', full_name='basictracer_go.wire.TracerState.trace_id', index=0,
+      number=1, type=6, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='span_id', full_name='TracerState.span_id', index=1,
-      number=2, type=16, cpp_type=2, label=1,
+      name='span_id', full_name='basictracer_go.wire.TracerState.span_id', index=1,
+      number=2, type=6, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='sampled', full_name='TracerState.sampled', index=2,
+      name='sampled', full_name='basictracer_go.wire.TracerState.sampled', index=2,
       number=3, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='baggage_items', full_name='TracerState.baggage_items', index=3,
+      name='baggage_items', full_name='basictracer_go.wire.TracerState.baggage_items', index=3,
       number=4, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -110,8 +110,8 @@ _TRACERSTATE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=15,
-  serialized_end=188,
+  serialized_start=36,
+  serialized_end=229,
 )
 
 _TRACERSTATE_BAGGAGEITEMSENTRY.containing_type = _TRACERSTATE
@@ -123,12 +123,12 @@ TracerState = _reflection.GeneratedProtocolMessageType('TracerState', (_message.
   BaggageItemsEntry = _reflection.GeneratedProtocolMessageType('BaggageItemsEntry', (_message.Message,), dict(
     DESCRIPTOR = _TRACERSTATE_BAGGAGEITEMSENTRY,
     __module__ = 'wire_pb2'
-    # @@protoc_insertion_point(class_scope:TracerState.BaggageItemsEntry)
+    # @@protoc_insertion_point(class_scope:basictracer_go.wire.TracerState.BaggageItemsEntry)
     ))
   ,
   DESCRIPTOR = _TRACERSTATE,
   __module__ = 'wire_pb2'
-  # @@protoc_insertion_point(class_scope:TracerState)
+  # @@protoc_insertion_point(class_scope:basictracer_go.wire.TracerState)
   ))
 _sym_db.RegisterMessage(TracerState)
 _sym_db.RegisterMessage(TracerState.BaggageItemsEntry)
