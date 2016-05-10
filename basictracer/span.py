@@ -5,8 +5,6 @@ import time
 import re
 
 from opentracing import Span
-from .context import Context
-from .util import generate_id
 
 class BasicSpan(Span):
     """BasicSpan is a thread-safe implementation of opentracing.Span.
@@ -16,7 +14,6 @@ class BasicSpan(Span):
             operation_name=None,
             context=None,
             tags=None,
-            sampled=False,
             start_time=None):
         super(BasicSpan, self).__init__(tracer)
         self._tracer = tracer
@@ -62,7 +59,6 @@ class BasicSpan(Span):
 
             self.context.baggage[key] = value
         return super(BasicSpan, self).set_baggage_item(key, value)
-
 
     def get_baggage_item(self, key):
         with self._lock:

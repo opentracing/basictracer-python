@@ -1,5 +1,4 @@
 import random
-import time
 
 guid_rng = random.Random()
 

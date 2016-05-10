@@ -12,7 +12,7 @@ class SpanRecorder(object):
 
 
 class Sampler(object):
-    """ Sampler determines the sampling status of a span given it's trace ID.
+    """ Sampler determines the sampling status of a span given its trace ID.
 
     Expected to return a boolean.
     """
@@ -20,7 +20,7 @@ class Sampler(object):
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def sampled(self, id):
+    def sampled(self, trace_id):
         pass
 
 class DefaultSampler(Sampler):
@@ -29,5 +29,5 @@ class DefaultSampler(Sampler):
     def __init__(self, rate):
         self.rate = rate
 
-    def sampled(self, id):
-        return id % self.rate == 0
+    def sampled(self, trace_id):
+        return trace_id % self.rate == 0
