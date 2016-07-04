@@ -1,4 +1,4 @@
 from __future__ import absolute_import
 
-from .tracer import BasicTracer
-from .recorder import SpanRecorder, Sampler, DefaultSampler
+from .tracer import BasicTracer  # noqa
+from .recorder import SpanRecorder, Sampler, DefaultSampler  # noqa

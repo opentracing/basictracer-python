@@ -6,7 +6,7 @@ History
 1.0rc3 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Adapt to SpanContext changes
 
 
 1.0rc2 (2016-07-06)
@@ -25,4 +25,3 @@ History
 ----------------
 
 - Initial public API
-

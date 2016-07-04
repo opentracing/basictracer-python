@@ -4,12 +4,18 @@ from abc import ABCMeta, abstractmethod
 
 
 class SpanRecorder(object):
-    """ SpanRecorder's job is to record and report a BasicSpan."""
+    """SpanRecorder is a simple abstract interface built around record_span.
+    """
 
     __metaclass__ = ABCMeta
 
     @abstractmethod
     def record_span(self, span):
+        """After the call to finish(), each BasicSpan is passed as `span` to
+        SpanRecorder.record_span.
+
+        :param BasicSpan span: the finish()'d BasicSpan object.
+        """
         pass
 
 
@@ -32,9 +38,9 @@ class InMemoryRecorder(SpanRecorder):
 
 
 class Sampler(object):
-    """ Sampler determines the sampling status of a span given its trace ID.
+    """Sampler determines the sampling status of a span given its trace_id.
 
-    Expected to return a boolean.
+    Sampler.sampled() is expected to return a boolean.
     """
 
     __metaclass__ = ABCMeta
@@ -45,7 +51,7 @@ class Sampler(object):
 
 
 class DefaultSampler(Sampler):
-    """ DefaultSampler determines the sampling status via ID % rate == 0
+    """DefaultSampler determines the sampling status via ID % rate == 0.
     """
     def __init__(self, rate):
         self.rate = rate
