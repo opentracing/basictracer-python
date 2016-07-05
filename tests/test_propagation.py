@@ -8,7 +8,6 @@ def test_propagation():
     sp = tracer.start_span(operation_name='test')
     sp.context.sampled = False
     sp.context.set_baggage_item('foo', 'bar')
-    opname = 'op'
 
     # Test invalid types
     with pytest.raises(UnsupportedFormatException):
@@ -20,12 +19,12 @@ def test_propagation():
              (Format.TEXT_MAP, {})]
     for format, carrier in tests:
         tracer.inject(sp.context, format, carrier)
-        extracted = tracer.extract(format, carrier)
+        extracted_ctx = tracer.extract(format, carrier)
 
-        assert extracted.trace_id == sp.context.trace_id
-        assert extracted.span_id == sp.context.span_id
-        assert extracted.sampled == sp.context.sampled
-        assert extracted.baggage == sp.context.baggage
+        assert extracted_ctx.trace_id == sp.context.trace_id
+        assert extracted_ctx.span_id == sp.context.span_id
+        assert extracted_ctx.sampled == sp.context.sampled
+        assert extracted_ctx.baggage == sp.context.baggage
 
 
 def test_start_span():
@@ -35,8 +34,7 @@ def test_start_span():
     sp.context.set_baggage_item('foo', 'bar')
 
     child = tracer.start_span(
-            operation_name='child', references=ChildOf(sp.context))
-
+        operation_name='child', references=ChildOf(sp.context))
     assert child.context.trace_id == sp.context.trace_id
     assert child.context.sampled == sp.context.sampled
     assert child.context.baggage == sp.context.baggage

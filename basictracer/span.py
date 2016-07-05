@@ -6,7 +6,6 @@ from opentracing import Span
 from opentracing.ext import tags
 
 
-
 class BasicSpan(Span):
     """BasicSpan is a thread-safe implementation of opentracing.Span.
     """
@@ -24,23 +23,18 @@ class BasicSpan(Span):
 
         self.operation_name = operation_name
         self.start_time = start_time
-        self._context = context
         self.parent_id = parent_id
         self.tags = tags if tags is not None else {}
         self.duration = -1
         self.logs = []
 
-    @property
-    def context(self):
-        return self._context
-
     def set_operation_name(self, operation_name):
-        with self._context._lock:
+        with self.context._lock:
             self.operation_name = operation_name
         return super(BasicSpan, self).set_operation_name(operation_name)
 
     def set_tag(self, key, value):
-        with self._context._lock:
+        with self.context._lock:
             if key == tags.SAMPLING_PRIORITY:
                 self.context.sampled = value > 0
             if self.tags is None:
@@ -49,17 +43,17 @@ class BasicSpan(Span):
         return super(BasicSpan, self).set_tag(key, value)
 
     def log_event(self, event, payload=None):
-        with self._context._lock:
+        with self.context._lock:
             self.logs.append(LogData(event=event, payload=payload))
         return super(BasicSpan, self).log_event(event, payload)
 
     def log(self, **kwargs):
-        with self._context._lock:
+        with self.context._lock:
             self.logs.append(LogData(**kwargs))
         return super(BasicSpan, self).log(**kwargs)
 
     def finish(self, finish_time=None):
-        with self._context._lock:
+        with self.context._lock:
             finish = time.time() if finish_time is None else finish_time
             self.duration = finish - self.start_time
             self._tracer.record(self)
