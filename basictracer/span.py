@@ -5,16 +5,18 @@ import time
 import re
 
 from opentracing import Span
+from opentracing.ext import tags
+
 
 class BasicSpan(Span):
     """BasicSpan is a thread-safe implementation of opentracing.Span.
     """
 
     def __init__(self, tracer,
-            operation_name=None,
-            context=None,
-            tags=None,
-            start_time=None):
+                 operation_name=None,
+                 context=None,
+                 tags=None,
+                 start_time=None):
         super(BasicSpan, self).__init__(tracer)
         self._tracer = tracer
         self._lock = Lock()
@@ -33,6 +35,8 @@ class BasicSpan(Span):
 
     def set_tag(self, key, value):
         with self._lock:
+            if key == tags.SAMPLING_PRIORITY:
+                self.context.sampled = value > 0
             if self.tags is None:
                 self.tags = {}
             self.tags[key] = value
@@ -53,9 +57,9 @@ class BasicSpan(Span):
             if self.context.baggage is None:
                 self.context.baggage = {}
 
-            canonicalKey = canonicalize_baggage_key(key)
-            if canonicalKey is not None:
-                key = canonicalKey
+            canonical_key = canonicalize_baggage_key(key)
+            if canonical_key is not None:
+                key = canonical_key
 
             self.context.baggage[key] = value
         return super(BasicSpan, self).set_baggage_item(key, value)
@@ -64,9 +68,9 @@ class BasicSpan(Span):
         with self._lock:
             if self.context.baggage is None:
                 return None
-            canonicalKey = canonicalize_baggage_key(key)
-            if canonicalKey is not None:
-                key = canonicalKey
+            canonical_key = canonicalize_baggage_key(key)
+            if canonical_key is not None:
+                key = canonical_key
         return self.context.baggage.get(key, None)
 
     def finish(self, finish_time=None):
@@ -75,6 +79,7 @@ class BasicSpan(Span):
             self.duration = finish - self.start_time
 
             self._tracer.record(self)
+
 
 class LogData(object):
 
@@ -87,6 +92,7 @@ class LogData(object):
         self.payload = payload
 
 baggage_key_re = re.compile('^(?i)([a-z0-9][-a-z0-9]*)$')
+
 
 # TODO(bg): Replace use of canonicalize_baggage_key when opentracing version is
 # bumped and includes this.

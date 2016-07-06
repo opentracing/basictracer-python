@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='basictracer',
-    version='1.0rc1',
+    version='1.0rc2.dev0',
     author='Brandon Gonzalez, The OpenTracing Authors',
     author_email='bg@lightstep.com',
     license='MIT',
@@ -23,7 +23,7 @@ setup(
     install_requires=[
         'futures',
         'protobuf>=3.0.0b2.post2',
-        'opentracing>=1.0rc3'
+        'opentracing>=1.0rc3,<1.1'
     ],
     extras_require={
         'tests': [
