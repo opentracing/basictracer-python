@@ -16,4 +16,8 @@ def test_span_sampling_priority():
     span.finish()
 
     assert len(recorder.get_spans()) == 1
-    assert len(recorder.get_sampled_spans()) == 0
+
+    def get_sampled_spans():
+        return [span for span in recorder.get_spans() if span.context.sampled]
+
+    assert len(get_sampled_spans()) == 0

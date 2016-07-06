@@ -30,10 +30,6 @@ class InMemoryRecorder(SpanRecorder):
         with self.mux:
             return self.spans[:]
 
-    def get_sampled_spans(self):
-        with self.mux:
-            return [span for span in self.spans if span.context.sampled]
-
 
 class Sampler(object):
     """ Sampler determines the sampling status of a span given its trace ID.
