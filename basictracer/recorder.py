@@ -1,14 +1,34 @@
+import threading
+
 from abc import ABCMeta, abstractmethod
 
+
 class SpanRecorder(object):
-    """ SpanRecorder's job is record and report a BasicSpan.
-    """
+    """ SpanRecorder's job is to record and report a BasicSpan."""
 
     __metaclass__ = ABCMeta
 
     @abstractmethod
     def record_span(self, span):
         pass
+
+
+class InMemoryRecorder(SpanRecorder):
+    """InMemoryRecorder stores all received spans in an internal list.
+
+    This recorder is not suitable for production use, only for testing.
+    """
+    def __init__(self):
+        self.spans = []
+        self.mux = threading.Lock()
+
+    def record_span(self, span):
+        with self.mux:
+            self.spans.append(span)
+
+    def get_spans(self):
+        with self.mux:
+            return self.spans[:]
 
 
 class Sampler(object):
@@ -22,6 +42,7 @@ class Sampler(object):
     @abstractmethod
     def sampled(self, trace_id):
         pass
+
 
 class DefaultSampler(Sampler):
     """ DefaultSampler determines the sampling status via ID % rate == 0
