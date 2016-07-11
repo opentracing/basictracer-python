@@ -3,7 +3,7 @@
 History
 -------
 
-1.0rc3 (unreleased)
+2.0.0 (unreleased)
 -------------------
 
 - Adapt to SpanContext changes
