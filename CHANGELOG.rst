@@ -9,6 +9,18 @@ History
 - Adapt to SpanContext changes
 
 
+2.0.0.dev1 (2016-07-12)
+-----------------------
+
+- Rename ChildOf/FollowsFrom to child_of/follows_from
+
+
+2.0.0.dev0 (2016-07-11)
+-----------------------
+
+- Adapt to SpanContext changes
+
+
 1.0rc2 (2016-07-06)
 -------------------
 
