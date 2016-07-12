@@ -12,6 +12,7 @@ from .util import generate_id
 class BasicTracer(Tracer):
 
     def __init__(self, recorder=None, sampler=None):
+        super(BasicTracer, self).__init__()
         self.recorder = NoopRecorder() if recorder is None else recorder
         self.sampler = DefaultSampler(1) if sampler is None else sampler
         self._binary_propagator = BinaryPropagator(self)
@@ -29,11 +30,11 @@ class BasicTracer(Tracer):
 
         # See if we have a parent_ctx in `references`
         parent_ctx = None
-        if references is not None:
-            references = (
-                references if isinstance(references, list)
-                else [references])
-            parent_ctx = references[0].span_context
+        if references:
+            if isinstance(references, list):
+                # TODO only the first reference is currently used
+                references = references[0]
+            parent_ctx = references.referee
 
         # Assemble the child ctx
         ctx = SpanContext(span_id=generate_id())
