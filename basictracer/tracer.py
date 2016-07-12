@@ -30,14 +30,11 @@ class BasicTracer(Tracer):
 
         # See if we have a parent_ctx in `references`
         parent_ctx = None
-        if references is not None:
+        if references:
             if isinstance(references, list):
-                # TODO only first reference is currently used
-                for ref in references:
-                    parent_ctx = ref.referee
-                    break
-            else:
-                parent_ctx = references.referee
+                # TODO only the first reference is currently used
+                references = references[0]
+            parent_ctx = references.referee
 
         # Assemble the child ctx
         ctx = SpanContext(span_id=generate_id())
