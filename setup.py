@@ -1,5 +1,6 @@
 from setuptools import setup
 
+
 setup(
     name='basictracer',
     version='2.0.0.dev1',
