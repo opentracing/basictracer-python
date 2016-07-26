@@ -58,8 +58,8 @@ class TextPropagator(object):
         self.tracer = tracer
 
     def inject(self, span_context, carrier):
-        carrier[field_name_trace_id] = '{:x}'.format(span_context.trace_id)
-        carrier[field_name_span_id] = '{:x}'.format(span_context.span_id)
+        carrier[field_name_trace_id] = '{0:x}'.format(span_context.trace_id)
+        carrier[field_name_span_id] = '{0:x}'.format(span_context.span_id)
         carrier[field_name_sampled] = str(span_context.sampled).lower()
         if span_context.baggage is not None:
             for k in span_context.baggage:
