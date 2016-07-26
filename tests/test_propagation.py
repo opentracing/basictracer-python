@@ -34,7 +34,7 @@ def test_start_span():
     sp.context.set_baggage_item('foo', 'bar')
 
     child = tracer.start_span(
-        operation_name='child', references=child_of(sp.context))
+        operation_name='child', child_of=sp.context)
     assert child.context.trace_id == sp.context.trace_id
     assert child.context.sampled == sp.context.sampled
     assert child.context.baggage == sp.context.baggage

@@ -1,5 +1,6 @@
 import time
 
+import opentracing
 from opentracing import Format, Tracer
 from opentracing import UnsupportedFormatException
 from .context import SpanContext
@@ -22,6 +23,7 @@ class BasicTracer(Tracer):
     def start_span(
             self,
             operation_name=None,
+            child_of=None,
             references=None,
             tags=None,
             start_time=None):
@@ -30,11 +32,13 @@ class BasicTracer(Tracer):
 
         # See if we have a parent_ctx in `references`
         parent_ctx = None
-        if references:
-            if isinstance(references, list):
-                # TODO only the first reference is currently used
-                references = references[0]
-            parent_ctx = references.referee
+        if child_of is not None:
+            parent_ctx = (
+                child_of if isinstance(child_of, opentracing.SpanContext)
+                else child_of.context)
+        elif references is not None and len(references) > 0:
+            # TODO only the first reference is currently used
+            parent_ctx = references[0].referenced_context
 
         # Assemble the child ctx
         ctx = SpanContext(span_id=generate_id())
@@ -61,6 +65,8 @@ class BasicTracer(Tracer):
             self._binary_propagator.inject(span_context, carrier)
         elif format == Format.TEXT_MAP:
             self._text_propagator.inject(span_context, carrier)
+        elif format == Format.HTTP_HEADERS:
+            self._text_propagator.inject(span_context, carrier)
         else:
             raise UnsupportedFormatException()
 
@@ -68,6 +74,8 @@ class BasicTracer(Tracer):
         if format == Format.BINARY:
             return self._binary_propagator.extract(carrier)
         elif format == Format.TEXT_MAP:
+            return self._text_propagator.extract(carrier)
+        elif format == Format.HTTP_HEADERS:
             return self._text_propagator.extract(carrier)
         else:
             raise UnsupportedFormatException()

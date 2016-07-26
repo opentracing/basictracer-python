@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='basictracer',
-    version='2.0.0.dev1',
+    version='2.0.0.dev2',
     author='Brandon Gonzalez, The OpenTracing Authors',
     author_email='bg@lightstep.com',
     license='MIT',
@@ -23,12 +23,12 @@ setup(
     install_requires=[
         'futures',
         'protobuf>=3.0.0b2.post2',
-        'opentracing==2.0.0.dev1'
+        'opentracing==2.0.0.dev3'
     ],
     extras_require={
         'tests': [
             'doubles',
-            'flake8',
+            'flake8<3',  # see https://github.com/zheller/flake8-quotes/issues/29
             'flake8-quotes',
             'mock<1.1.0',
             'pytest>=2.7,<3',

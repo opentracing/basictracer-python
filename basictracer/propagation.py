@@ -65,7 +65,7 @@ class TextPropagator(object):
             for k in span_context.baggage:
                 carrier[prefix_baggage+k] = span_context.baggage[k]
 
-    def extract(self, carrier):
+    def extract(self, carrier):  # noqa
         count = 0
         span_id, trace_id, sampled = (0, 0, False)
         baggage = {}
