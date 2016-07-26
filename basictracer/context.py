@@ -2,8 +2,10 @@ from __future__ import absolute_import
 
 from threading import Lock
 
+import opentracing
 
-class SpanContext(object):
+
+class SpanContext(opentracing.SpanContext):
     """SpanContext satisfies the opentracing.SpanContext contract.
 
     trace_id and span_id are uint64's, so their range is [0, 2^64).

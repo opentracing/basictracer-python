@@ -23,7 +23,7 @@ setup(
     install_requires=[
         'futures',
         'protobuf>=3.0.0b2.post2',
-        'opentracing==2.0.0.dev1'
+        'opentracing==2.0.0.dev3'
     ],
     extras_require={
         'tests': [
