@@ -34,8 +34,8 @@ class BasicTracer(Tracer):
         parent_ctx = None
         if child_of is not None:
             parent_ctx = (
-                    child_of if isinstance(child_of, opentracing.SpanContext)
-                    else child_of.context)
+                child_of if isinstance(child_of, opentracing.SpanContext)
+                else child_of.context)
         elif references is not None and len(references) > 0:
             # TODO only the first reference is currently used
             parent_ctx = references[0].referenced_context
