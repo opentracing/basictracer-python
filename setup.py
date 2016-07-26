@@ -3,8 +3,8 @@ from setuptools import setup
 setup(
     name='basictracer',
     version='2.0.1.dev0',
-    author='Brandon Gonzalez, The OpenTracing Authors',
-    author_email='bg@lightstep.com',
+    author='The OpenTracing Authors',
+    author_email='info@opentracing.io',
     license='MIT',
     url='https://github.com/opentracing/basictracer-python',
     keywords=['basictracer', 'opentracing'],
