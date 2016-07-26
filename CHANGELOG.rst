@@ -6,7 +6,7 @@ History
 2.0.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Positional arguments
 
 
 2.0.0.dev2 (2016-07-26)
