@@ -3,8 +3,8 @@
 History
 -------
 
-2.0.0 (unreleased)
--------------------
+2.0.0.dev2 (2016-07-26)
+-----------------------
 
 - Adapt to SpanContext changes
 
