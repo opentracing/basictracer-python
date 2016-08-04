@@ -25,7 +25,9 @@ from opentracing.harness.api_check import APICompatibilityCheckMixin
 
 class APICheckBasicTracer(unittest.TestCase, APICompatibilityCheckMixin):
     def tracer(self):
-        return BasicTracer()
+        t = BasicTracer()
+        t.register_required_propagators()
+        return t
 
     def check_baggage_values(self):
         return True
