@@ -4,7 +4,6 @@ import opentracing
 from opentracing import Format, Tracer
 from opentracing import UnsupportedFormatException
 from .context import SpanContext
-from .propagation import BinaryPropagator, TextPropagator
 from .recorder import SpanRecorder, DefaultSampler
 from .span import BasicSpan
 from .util import generate_id
@@ -16,9 +15,17 @@ class BasicTracer(Tracer):
         super(BasicTracer, self).__init__()
         self.recorder = NoopRecorder() if recorder is None else recorder
         self.sampler = DefaultSampler(1) if sampler is None else sampler
-        self._binary_propagator = BinaryPropagator(self)
-        self._text_propagator = TextPropagator(self)
-        return
+        self._propagators = {}
+
+    def register_propagator(self, format, propagator):
+        self._propagators[format] = propagator
+
+    def register_required_propagators(self):
+        from .text_propagator import TextPropagator
+        from .binary_propagator import BinaryPropagator
+        self.register_propagator(Format.TEXT_MAP, TextPropagator())
+        self.register_propagator(Format.HTTP_HEADERS, TextPropagator())
+        self.register_propagator(Format.BINARY, BinaryPropagator())
 
     def start_span(
             self,
@@ -61,22 +68,14 @@ class BasicTracer(Tracer):
             start_time=start_time)
 
     def inject(self, span_context, format, carrier):
-        if format == Format.BINARY:
-            self._binary_propagator.inject(span_context, carrier)
-        elif format == Format.TEXT_MAP:
-            self._text_propagator.inject(span_context, carrier)
-        elif format == Format.HTTP_HEADERS:
-            self._text_propagator.inject(span_context, carrier)
+        if format in self._propagators:
+            self._propagators[format].inject(span_context, carrier)
         else:
             raise UnsupportedFormatException()
 
     def extract(self, format, carrier):
-        if format == Format.BINARY:
-            return self._binary_propagator.extract(carrier)
-        elif format == Format.TEXT_MAP:
-            return self._text_propagator.extract(carrier)
-        elif format == Format.HTTP_HEADERS:
-            return self._text_propagator.extract(carrier)
+        if format in self._propagators:
+            return self._propagators[format].extract(carrier)
         else:
             raise UnsupportedFormatException()
 

@@ -1,10 +1,11 @@
 import pytest
-from opentracing import child_of, Format, UnsupportedFormatException
+from opentracing import Format, UnsupportedFormatException
 from basictracer import BasicTracer
 
 
 def test_propagation():
     tracer = BasicTracer()
+    tracer.register_required_propagators()
     sp = tracer.start_span(operation_name='test')
     sp.context.sampled = False
     sp.context.set_baggage_item('foo', 'bar')
@@ -30,6 +31,7 @@ def test_propagation():
 def test_start_span():
     """ Test in process child span creation."""
     tracer = BasicTracer()
+    tracer.register_required_propagators()
     sp = tracer.start_span(operation_name='test')
     sp.context.set_baggage_item('foo', 'bar')
 

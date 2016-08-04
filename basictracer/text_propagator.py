@@ -1,48 +1,8 @@
 from __future__ import absolute_import
 
-import struct
-from opentracing import InvalidCarrierException, SpanContextCorruptedException
+from opentracing import SpanContextCorruptedException
 from .context import SpanContext
-from .wire_pb2 import TracerState
-
-_proto_size_bytes = 4  # bytes
-
-
-class BinaryPropagator(object):
-
-    def __init__(self, tracer):
-        self.tracer = tracer
-
-    def inject(self, span_context, carrier):
-        if type(carrier) is not bytearray:
-            raise InvalidCarrierException()
-        state = TracerState()
-        state.trace_id = span_context.trace_id
-        state.span_id = span_context.span_id
-        state.sampled = span_context.sampled
-        if span_context.baggage is not None:
-            for key in span_context.baggage:
-                state.baggage_items[key] = span_context.baggage[key]
-
-        # The binary format is {uint32}{protobuf} using big-endian for the uint
-        carrier.extend(struct.pack('>I', state.ByteSize()))
-        carrier.extend(state.SerializeToString())
-
-    def extract(self, carrier):
-        if type(carrier) is not bytearray:
-            raise InvalidCarrierException()
-        state = TracerState()
-        state.ParseFromString(str(carrier[_proto_size_bytes:]))
-        baggage = {}
-        for k in state.baggage_items:
-            baggage[k] = state.baggage_items[k]
-
-        return SpanContext(
-            span_id=state.span_id,
-            trace_id=state.trace_id,
-            baggage=baggage,
-            sampled=state.sampled)
-
+from .propagator import Propagator
 
 prefix_tracer_state = 'ot-tracer-'
 prefix_baggage = 'ot-baggage-'
@@ -52,10 +12,8 @@ field_name_sampled = prefix_tracer_state + 'sampled'
 field_count = 3
 
 
-class TextPropagator(object):
-
-    def __init__(self, tracer):
-        self.tracer = tracer
+class TextPropagator(Propagator):
+    """A BasicTracer Propagator for Format.TEXT_MAP."""
 
     def inject(self, span_context, carrier):
         carrier[field_name_trace_id] = '{0:x}'.format(span_context.trace_id)
