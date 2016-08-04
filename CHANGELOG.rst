@@ -3,8 +3,8 @@
 History
 -------
 
-2.0.1 (unreleased)
-------------------
+2.0.1.dev1 (2016-08-04)
+-----------------------
 
 - Allow BasicTracer users to opt in to propagators
 
