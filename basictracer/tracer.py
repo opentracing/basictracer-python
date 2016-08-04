@@ -12,12 +12,29 @@ from .util import generate_id
 class BasicTracer(Tracer):
 
     def __init__(self, recorder=None, sampler=None):
+        """Initialize a BasicTracer instance.
+
+        Note that the returned BasicTracer has *no* propagators registered. The
+        user should either call register_propagator() for each needed
+        inject/extract format and/or the user can simply call
+        register_required_propagators().
+
+        The required formats are opt-in because of protobuf version conflicts
+        with the binary carrior.
+        """
+
         super(BasicTracer, self).__init__()
         self.recorder = NoopRecorder() if recorder is None else recorder
         self.sampler = DefaultSampler(1) if sampler is None else sampler
         self._propagators = {}
 
     def register_propagator(self, format, propagator):
+        """Register a propagator with this BasicTracer.
+
+        :param string format: a Format identifier like Format.TEXT_MAP
+        :param Propagator propagator: a Propagator instance to handle
+            inject/extract calls involving `format`
+        """
         self._propagators[format] = propagator
 
     def register_required_propagators(self):
