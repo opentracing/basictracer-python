@@ -20,7 +20,7 @@ class BasicTracer(Tracer):
         register_required_propagators().
 
         The required formats are opt-in because of protobuf version conflicts
-        with the binary carrior.
+        with the binary carrier.
         """
 
         super(BasicTracer, self).__init__()
