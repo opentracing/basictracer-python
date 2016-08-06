@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 
+from threading import Lock
 import time
 
 from opentracing import Span
@@ -20,6 +21,7 @@ class BasicSpan(Span):
             start_time=None):
         super(BasicSpan, self).__init__(tracer, context)
         self._tracer = tracer
+        self._lock = Lock()
 
         self.operation_name = operation_name
         self.start_time = start_time
@@ -29,12 +31,12 @@ class BasicSpan(Span):
         self.logs = []
 
     def set_operation_name(self, operation_name):
-        with self.context._lock:
+        with self._lock:
             self.operation_name = operation_name
         return super(BasicSpan, self).set_operation_name(operation_name)
 
     def set_tag(self, key, value):
-        with self.context._lock:
+        with self._lock:
             if key == tags.SAMPLING_PRIORITY:
                 self.context.sampled = value > 0
             if self.tags is None:
@@ -43,20 +45,31 @@ class BasicSpan(Span):
         return super(BasicSpan, self).set_tag(key, value)
 
     def log_event(self, event, payload=None):
-        with self.context._lock:
+        with self._lock:
             self.logs.append(LogData(event=event, payload=payload))
         return super(BasicSpan, self).log_event(event, payload)
 
     def log(self, **kwargs):
-        with self.context._lock:
+        with self._lock:
             self.logs.append(LogData(**kwargs))
         return super(BasicSpan, self).log(**kwargs)
 
     def finish(self, finish_time=None):
-        with self.context._lock:
+        with self._lock:
             finish = time.time() if finish_time is None else finish_time
             self.duration = finish - self.start_time
             self._tracer.record(self)
+
+    def set_baggage_item(self, key, value):
+        with self._lock:
+            self._context = self._context._with_baggage_item(key, value)
+        return self
+
+    def get_baggage_item(self, key):
+        with self._lock:
+            if key in self.context.baggage:
+                return self.context.baggage[key]
+            return None
 
 
 class LogData(object):

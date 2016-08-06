@@ -1,7 +1,5 @@
 from __future__ import absolute_import
 
-from threading import Lock
-
 import opentracing
 
 
@@ -17,22 +15,23 @@ class SpanContext(opentracing.SpanContext):
             span_id=None,
             baggage=None,
             sampled=True):
-        self._lock = Lock()
         self.trace_id = trace_id
         self.span_id = span_id
         self.sampled = sampled
-        self.baggage = baggage
+        self._baggage = baggage
 
-    def set_baggage_item(self, key, value):
-        with self._lock:
-            if self.baggage is None:
-                self.baggage = {}
+    @property
+    def baggage(self):
+        return (
+            opentracing.SpanContext.EMPTY_BAGGAGE
+            if self._baggage is None
+            else self._baggage)
 
-            self.baggage[key] = value
-        return self
-
-    def get_baggage_item(self, key):
-        with self._lock:
-            if self.baggage is None:
-                return None
-            return self.baggage.get(key, None)
+    def _with_baggage_item(self, key, value):
+        baggage_copy = ({} if self._baggage is None else self._baggage.copy())
+        baggage_copy[key] = value
+        return SpanContext(
+            trace_id=self.trace_id,
+            span_id=self.span_id,
+            sampled=self.sampled,
+            baggage=baggage_copy)

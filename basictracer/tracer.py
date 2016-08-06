@@ -67,8 +67,8 @@ class BasicTracer(Tracer):
         # Assemble the child ctx
         ctx = SpanContext(span_id=generate_id())
         if parent_ctx is not None:
-            if parent_ctx.baggage is not None:
-                ctx.baggage = parent_ctx.baggage.copy()
+            if parent_ctx._baggage is not None:
+                ctx._baggage = parent_ctx._baggage.copy()
             ctx.trace_id = parent_ctx.trace_id
             ctx.sampled = parent_ctx.sampled
         else:
