@@ -18,20 +18,17 @@ class SpanContext(opentracing.SpanContext):
         self.trace_id = trace_id
         self.span_id = span_id
         self.sampled = sampled
-        self._baggage = baggage
+        self._baggage = baggage or opentracing.SpanContext.EMPTY_BAGGAGE
 
     @property
     def baggage(self):
-        return (
-            opentracing.SpanContext.EMPTY_BAGGAGE
-            if self._baggage is None
-            else self._baggage)
+        return self._baggage or opentracing.SpanContext.EMPTY_BAGGAGE
 
-    def _with_baggage_item(self, key, value):
-        baggage_copy = ({} if self._baggage is None else self._baggage.copy())
-        baggage_copy[key] = value
+    def with_baggage_item(self, key, value):
+        new_baggage = self._baggage.copy()
+        new_baggage[key] = value
         return SpanContext(
             trace_id=self.trace_id,
             span_id=self.span_id,
             sampled=self.sampled,
-            baggage=baggage_copy)
+            baggage=new_baggage)

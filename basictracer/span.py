@@ -61,15 +61,14 @@ class BasicSpan(Span):
             self._tracer.record(self)
 
     def set_baggage_item(self, key, value):
+        new_context = self._context.with_baggage_item(key, value)
         with self._lock:
-            self._context = self._context._with_baggage_item(key, value)
+            self._context = new_context
         return self
 
     def get_baggage_item(self, key):
         with self._lock:
-            if key in self.context.baggage:
-                return self.context.baggage[key]
-            return None
+            return self.context.baggage.get(key)
 
 
 class LogData(object):
