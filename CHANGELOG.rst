@@ -3,7 +3,7 @@
 History
 -------
 
-2.0.2 (unreleased)
+2.1.0 (2016-08-07)
 ------------------
 
 - Implement immutable SpanContext
