@@ -6,7 +6,7 @@ History
 2.0.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Implement immutable SpanContext
 
 
 2.0.1.dev1 (2016-08-04)

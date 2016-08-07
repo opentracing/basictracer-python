@@ -8,7 +8,7 @@ def test_propagation():
     tracer.register_required_propagators()
     sp = tracer.start_span(operation_name='test')
     sp.context.sampled = False
-    sp.context.set_baggage_item('foo', 'bar')
+    sp.set_baggage_item('foo', 'bar')
 
     # Test invalid types
     with pytest.raises(UnsupportedFormatException):
@@ -33,7 +33,7 @@ def test_start_span():
     tracer = BasicTracer()
     tracer.register_required_propagators()
     sp = tracer.start_span(operation_name='test')
-    sp.context.set_baggage_item('foo', 'bar')
+    sp.set_baggage_item('foo', 'bar')
 
     child = tracer.start_span(
         operation_name='child', child_of=sp.context)
