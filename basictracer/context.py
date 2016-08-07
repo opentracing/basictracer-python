@@ -22,7 +22,7 @@ class SpanContext(opentracing.SpanContext):
 
     @property
     def baggage(self):
-        return self._baggage or opentracing.SpanContext.EMPTY_BAGGAGE
+        return self._baggage
 
     def with_baggage_item(self, key, value):
         new_baggage = self._baggage.copy()
