@@ -6,7 +6,7 @@ History
 2.1.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Make the RNG robust to fork()
 
 
 2.1.0 (2016-08-07)
