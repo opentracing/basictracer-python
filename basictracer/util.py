@@ -17,5 +17,5 @@ def generate_id():
     pid = os.getpid()
     if (_fork_guard_pid == 0) or (_fork_guard_pid != pid):
         _fork_guard_pid = pid
-        guid_rng.jumpahead(int(1000000 * time.time()) ^ pid)
+        guid_rng.seed(int(1000000 * time.time()) ^ pid)
     return guid_rng.getrandbits(64) - 1
