@@ -44,14 +44,30 @@ class BasicSpan(Span):
             self.tags[key] = value
         return super(BasicSpan, self).set_tag(key, value)
 
-    def log_event(self, event, payload=None):
+    def log_kv(self, key_values, timestamp=None):
         with self._lock:
-            self.logs.append(LogData(event=event, payload=payload))
+            self.logs.append(LogData(key_values, timestamp))
+        return super(BasicSpan, self).log_kv(key_values, timestamp)
+
+    def log_event(self, event, payload=None):
+        key_values = {"event": event}
+        if payload is not None:
+            key_values["payload"] = payload
+        with self._lock:
+            self.logs.append(LogData(key_values))
         return super(BasicSpan, self).log_event(event, payload)
 
     def log(self, **kwargs):
+        key_values = {}
+        if kwargs["event"] is not None:
+            key_values["event"] = kwargs["event"]
+        if kwargs["payload"] is not None:
+            key_values["payload"] = kwargs["payload"]
+        timestamp = None
+        if kwargs["timestamp"] is not None:
+            timestamp = kwargs["timestamp"]
         with self._lock:
-            self.logs.append(LogData(**kwargs))
+            self.logs.append(LogData(key_values, timestamp))
         return super(BasicSpan, self).log(**kwargs)
 
     def finish(self, finish_time=None):
@@ -72,12 +88,9 @@ class BasicSpan(Span):
 
 
 class LogData(object):
-
     def __init__(
             self,
-            event='',
-            timestamp=None,
-            payload=None):
-        self.event = event
+            key_values,
+            timestamp=None):
+        self.key_values = key_values
         self.timestamp = time.time() if timestamp is None else timestamp
-        self.payload = payload
