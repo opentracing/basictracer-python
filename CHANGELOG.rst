@@ -3,7 +3,7 @@
 History
 -------
 
-2.1.2 (unreleased)
+2.1.2 (2016-09-22)
 ------------------
 
 - Adjust to OT logging changes
