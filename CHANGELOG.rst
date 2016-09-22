@@ -6,7 +6,7 @@ History
 2.1.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Bump the minor version :-/
 
 
 2.1.2 (2016-09-22)
