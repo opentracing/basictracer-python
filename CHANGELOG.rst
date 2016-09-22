@@ -6,7 +6,7 @@ History
 2.1.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Adjust to OT logging changes
 
 
 2.1.1 (2016-08-19)
