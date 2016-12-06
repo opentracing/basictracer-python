@@ -7,7 +7,6 @@ A python version of the "BasicTracer" reference implementation for OpenTracing.
 ## Build, install and run tests
 
 ```
-python setup.py install
-python -m pytest
+make bootstrap; make test
 ```
 
