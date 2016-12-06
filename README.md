@@ -3,3 +3,10 @@
 # Basictracer Python
 
 A python version of the "BasicTracer" reference implementation for OpenTracing.
+
+## Build, install and run tests
+
+```
+make bootstrap; make test
+```
+
