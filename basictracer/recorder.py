@@ -1,13 +1,12 @@
 import threading
 
 from abc import ABCMeta, abstractmethod
+import six
 
 
-class SpanRecorder(object):
+class SpanRecorder(six.with_metaclass(ABCMeta, object)):
     """SpanRecorder is a simple abstract interface built around record_span.
     """
-
-    __metaclass__ = ABCMeta
 
     @abstractmethod
     def record_span(self, span):
@@ -37,13 +36,11 @@ class InMemoryRecorder(SpanRecorder):
             return self.spans[:]
 
 
-class Sampler(object):
+class Sampler(six.with_metaclass(ABCMeta, object)):
     """Sampler determines the sampling status of a span given its trace_id.
 
     Sampler.sampled() is expected to return a boolean.
     """
-
-    __metaclass__ = ABCMeta
 
     @abstractmethod
     def sampled(self, trace_id):

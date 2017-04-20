@@ -32,7 +32,7 @@ class BinaryPropagator(Propagator):
         if type(carrier) is not bytearray:
             raise InvalidCarrierException()
         state = TracerState()
-        state.ParseFromString(str(carrier[_proto_size_bytes:]))
+        state.ParseFromString(bytes(carrier[_proto_size_bytes:]))
         baggage = {}
         for k in state.baggage_items:
             baggage[k] = state.baggage_items[k]
