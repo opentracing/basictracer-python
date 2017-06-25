@@ -3,3 +3,7 @@
 -r requirements.txt
 
 -e .[tests]
+
+# TODO: using the latest proposal version; remove that after it has
+# been merged upstream
+-e git+https://github.com/palazzem/opentracing-python.git@palazzem/context-propagation-iter-2#egg=opentracing-1.2.3

@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-from threading import Lock
+from threading import RLock
 import time
 
 from opentracing import Span
@@ -21,7 +21,9 @@ class BasicSpan(Span):
             start_time=None):
         super(BasicSpan, self).__init__(tracer, context)
         self._tracer = tracer
-        self._lock = Lock()
+        self._refcount = 1
+        self._to_restore = self._tracer.active_span
+        self._lock = RLock()
 
         self.operation_name = operation_name
         self.start_time = start_time
@@ -48,6 +50,26 @@ class BasicSpan(Span):
         with self._lock:
             self.logs.append(LogData(key_values, timestamp))
         return super(BasicSpan, self).log_kv(key_values, timestamp)
+
+    def capture(self):
+        with self._lock:
+            self._refcount += 1
+
+    def deactivate(self):
+        # TODO: this safe-guard breaks the case of start_manual_span()
+        # with a context manager; probably we should refactor this approach
+        # because may not fit very well with the Python API. Another
+        # approach is using this check only to decide if calling
+        # `make_active(self._to_restore)` or not.
+        if self._tracer.active_span != self:
+            # this shouldn't happen if users call methods in the expected order
+            return
+
+        with self._lock:
+            self._tracer.active_span_source.make_active(self._to_restore)
+            self._refcount -= 1
+            if self._refcount == 0:
+                self.finish()
 
     def finish(self, finish_time=None):
         with self._lock:
