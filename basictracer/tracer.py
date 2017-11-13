@@ -44,13 +44,14 @@ class BasicTracer(Tracer):
         self.register_propagator(Format.HTTP_HEADERS, TextPropagator())
         self.register_propagator(Format.BINARY, BinaryPropagator())
 
-    def start_span(
+    def start_manual(
             self,
             operation_name=None,
             child_of=None,
             references=None,
             tags=None,
-            start_time=None):
+            start_time=None,
+            ignore_active_span=False):
 
         start_time = time.time() if start_time is None else start_time
 
@@ -83,6 +84,23 @@ class BasicTracer(Tracer):
             parent_id=(None if parent_ctx is None else parent_ctx.span_id),
             tags=tags,
             start_time=start_time)
+
+    def start_span(
+            self,
+            operation_name=None,
+            child_of=None,
+            references=None,
+            tags=None,
+            start_time=None):
+        """Deprecated: use `start_manual()` or `start_active()` instead."""
+        return self.start_manual(
+            operation_name=operation_name,
+            child_of=child_of,
+            references=references,
+            tags=tags,
+            start_time=start_time,
+            ignore_active_span=True,
+        )
 
     def inject(self, span_context, format, carrier):
         if format in self._propagators:

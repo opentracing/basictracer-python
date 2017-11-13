@@ -22,7 +22,8 @@ setup(
     platforms='any',
     install_requires=[
         'protobuf>=3.0.0b2.post2',
-        'opentracing>=1.2.1,<1.3',
+        # TODO: pin the right version after the proposal has been merged on master
+        # 'opentracing>=1.2.1,<1.3',
         'six>=1.10.0,<2.0',
     ],
     extras_require={
