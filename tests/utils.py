@@ -1,4 +1,4 @@
-# Copyright (c) 2016 The OpenTracing Authors.
+# Copyright (c) 2017 The OpenTracing Authors.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -17,24 +17,19 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
 from __future__ import absolute_import
-import unittest
+
+from unittest import TestCase
+
 from basictracer import BasicTracer
-from opentracing.harness.api_check import APICompatibilityCheckMixin
+from basictracer.recorder import InMemoryRecorder
 
 
-class APICheckBasicTracer(unittest.TestCase, APICompatibilityCheckMixin):
-    def tracer(self):
-        t = BasicTracer()
-        t.register_required_propagators()
-        return t
+class TracerTestCase(TestCase):
+    """Common TestCase to avoid duplication"""
 
-    def check_baggage_values(self):
-        return True
-
-    def is_parent(self, parent, span):
-        # use `Span` ids to check parenting
-        if parent is None:
-            return span.parent_id is None
-
-        return parent.context.span_id == span.parent_id
+    def setUp(self):
+        # initialize an in-memory tracer
+        self.recorder = InMemoryRecorder()
+        self.tracer = BasicTracer(recorder=self.recorder)
