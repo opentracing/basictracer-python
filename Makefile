@@ -52,7 +52,7 @@ clean-test:
 	rm -fr htmlcov/
 
 lint:
-	flake8 $(project) tests
+	flake8 --config=.flake8 $(project) tests
 
 test:
 	$(pytest) $(test_args)
