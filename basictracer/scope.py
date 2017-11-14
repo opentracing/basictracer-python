@@ -27,8 +27,7 @@ class BasicScope(Scope):
     """BasicScope is the implementation of `opentracing.Scope`"""
 
     def __init__(self, manager, span, finish_on_close=True):
-        """
-        Initialize a `Scope` for the given `Span` object
+        """Initialize a `Scope` for the given `Span` object
 
         :param span: the `Span` used for this `Scope`
         :param finish_on_close: whether span should automatically be
@@ -40,14 +39,12 @@ class BasicScope(Scope):
         self._to_restore = manager.active()
 
     def span(self):
-        """
-        Return the `Span` that's been scoped by this `Scope`.
-        """
+        """Return the `Span` that's been scoped by this `Scope`."""
         return self._span
 
     def close(self):
-        """Finish the `Span` when the `Scope` context expires, unless
-        `finish_on_close` has been set
+        """Finish the `Span` when the `Scope` context ends, unless
+        `finish_on_close` has been set.
         """
         if self._manager.active() is not self:
             return
