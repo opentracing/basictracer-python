@@ -23,33 +23,28 @@ from __future__ import absolute_import
 from opentracing import Scope
 
 
-class BasicScope(Scope):
+class ThreadLocalScope(Scope):
     """BasicScope is the implementation of `opentracing.Scope`"""
 
-    def __init__(self, manager, span, finish_on_close=True):
+    def __init__(self, manager, span, finish_on_close):
         """Initialize a `Scope` for the given `Span` object
 
         :param span: the `Span` used for this `Scope`
         :param finish_on_close: whether span should automatically be
             finished when `Scope#close()` is called
         """
-        self._manager = manager
-        self._span = span
+        super(ThreadLocalScope, self).__init__(manager, span)
         self._finish_on_close = finish_on_close
-        self._to_restore = manager.active()
-
-    def span(self):
-        """Return the `Span` that's been scoped by this `Scope`."""
-        return self._span
+        self._to_restore = manager.active
 
     def close(self):
         """Finish the `Span` when the `Scope` context ends, unless
         `finish_on_close` has been set.
         """
-        if self._manager.active() is not self:
+        if self.manager.active is not self:
             return
 
         if self._finish_on_close:
-            self._span.finish()
+            self.span.finish()
 
         setattr(self._manager._tls_scope, 'active', self._to_restore)

@@ -24,7 +24,7 @@ import threading
 
 from opentracing import ScopeManager
 
-from .scope import BasicScope
+from .scope import ThreadLocalScope
 
 
 class ThreadLocalScopeManager(ScopeManager):
@@ -34,7 +34,7 @@ class ThreadLocalScopeManager(ScopeManager):
     def __init__(self):
         self._tls_scope = threading.local()
 
-    def activate(self, span, finish_on_close=True):
+    def activate(self, span, finish_on_close):
         """Make a `Span` instance active.
 
         :param span: the `Span` that should become active
@@ -46,16 +46,17 @@ class ThreadLocalScopeManager(ScopeManager):
             `Scope#close()` on the returned instance. By default, `Span` will
             automatically be finished when `Scope#close()` is called.
         """
-        scope = BasicScope(self, span, finish_on_close=finish_on_close)
+        scope = ThreadLocalScope(self, span, finish_on_close)
         setattr(self._tls_scope, 'active', scope)
         return scope
 
+    @property
     def active(self):
         """Return the currently active `Scope` which can be used to access the
-        currently active `Scope#span()`.
+        currently active `Scope#span`.
 
         If there is a non-null `Scope`, its wrapped `Span` becomes an implicit
-        parent of any newly-created `Span` at `Tracer#start_active()`
+        parent of any newly-created `Span` at `Tracer#start_active_span()`
         time.
 
         :return: the `Scope` that is active, or `None` if not available.

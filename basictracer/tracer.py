@@ -24,11 +24,12 @@ class BasicTracer(Tracer):
         with the binary carrier.
         """
 
-        super(BasicTracer, self).__init__()
+        scope_manager = ThreadLocalScopeManager() \
+            if scope_manager is None else scope_manager
+        super(BasicTracer, self).__init__(scope_manager)
+
         self.recorder = NoopRecorder() if recorder is None else recorder
         self.sampler = DefaultSampler(1) if sampler is None else sampler
-        self._scope_manager = ThreadLocalScopeManager() \
-            if scope_manager is None else scope_manager
         self._propagators = {}
 
     def register_propagator(self, format, propagator):
@@ -47,36 +48,34 @@ class BasicTracer(Tracer):
         self.register_propagator(Format.HTTP_HEADERS, TextPropagator())
         self.register_propagator(Format.BINARY, BinaryPropagator())
 
-    def start_active(self,
-                     operation_name=None,
-                     child_of=None,
-                     references=None,
-                     tags=None,
-                     start_time=None,
-                     ignore_active_scope=False,
-                     finish_on_close=True):
+    def start_active_span(self,
+                          operation_name=None,
+                          child_of=None,
+                          references=None,
+                          tags=None,
+                          start_time=None,
+                          ignore_active_span=False,
+                          finish_on_close=False):
 
         # create a new Span
-        span = self.start_manual(
+        span = self.start_span(
             operation_name=operation_name,
             child_of=child_of,
             references=references,
             tags=tags,
             start_time=start_time,
-            ignore_active_scope=ignore_active_scope,
+            ignore_active_span=ignore_active_span,
         )
 
-        return self.scope_manager.activate(span,
-                                           finish_on_close=finish_on_close)
+        return self.scope_manager.activate(span, finish_on_close)
 
-    def start_manual(
-            self,
-            operation_name=None,
-            child_of=None,
-            references=None,
-            tags=None,
-            start_time=None,
-            ignore_active_scope=False):
+    def start_span(self,
+                   operation_name=None,
+                   child_of=None,
+                   references=None,
+                   tags=None,
+                   start_time=None,
+                   ignore_active_span=False):
 
         start_time = time.time() if start_time is None else start_time
 
@@ -91,10 +90,10 @@ class BasicTracer(Tracer):
             parent_ctx = references[0].referenced_context
 
         # retrieve the active SpanContext
-        if not ignore_active_scope and parent_ctx is None:
-            scope = self.scope_manager.active()
+        if not ignore_active_span and parent_ctx is None:
+            scope = self.scope_manager.active
             if scope is not None:
-                parent_ctx = scope.span().context
+                parent_ctx = scope.span.context
 
         # Assemble the child ctx
         ctx = SpanContext(span_id=generate_id())
@@ -115,23 +114,6 @@ class BasicTracer(Tracer):
             parent_id=(None if parent_ctx is None else parent_ctx.span_id),
             tags=tags,
             start_time=start_time)
-
-    def start_span(
-            self,
-            operation_name=None,
-            child_of=None,
-            references=None,
-            tags=None,
-            start_time=None):
-        """Deprecated: use `start_manual()` or `start_active()` instead."""
-        return self.start_manual(
-            operation_name=operation_name,
-            child_of=child_of,
-            references=references,
-            tags=tags,
-            start_time=start_time,
-            ignore_active_scope=True,
-        )
 
     def inject(self, span_context, format, carrier):
         if format in self._propagators:
