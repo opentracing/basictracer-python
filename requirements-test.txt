@@ -5,4 +5,4 @@
 -e .[tests]
 
 # TODO: using the latest proposal version; remove that after it has been merged upstream
--e git+https://github.com/palazzem/opentracing-python.git@palazzem/scope-manager#egg=opentracing-1.3.0
+-e git+https://github.com/carlosalberto/opentracing-python.git@span_propagation_updated#egg=opentracing-1.3.0
