@@ -49,13 +49,13 @@ class BasicTracer(Tracer):
         self.register_propagator(Format.BINARY, BinaryPropagator())
 
     def start_active_span(self,
-                          operation_name=None,
+                          operation_name,
+                          finish_on_close,
                           child_of=None,
                           references=None,
                           tags=None,
                           start_time=None,
-                          ignore_active_span=False,
-                          finish_on_close=False):
+                          ignore_active_span=False):
 
         # create a new Span
         span = self.start_span(
