@@ -24,22 +24,23 @@ from opentracing import Scope
 
 
 class ThreadLocalScope(Scope):
-    """BasicScope is the implementation of `opentracing.Scope`"""
+    """ThreadLocalScope is an implementation of `opentracing.Scope`
+    using thread-local storage."""
 
     def __init__(self, manager, span, finish_on_close):
-        """Initialize a `Scope` for the given `Span` object
+        """Initialize a `Scope` for the given `Span` object.
 
-        :param span: the `Span` used for this `Scope`
+        :param span: the `Span` wrapped by this `Scope`.
         :param finish_on_close: whether span should automatically be
-            finished when `Scope#close()` is called
+            finished when `Scope#close()` is called.
         """
         super(ThreadLocalScope, self).__init__(manager, span)
         self._finish_on_close = finish_on_close
         self._to_restore = manager.active
 
     def close(self):
-        """Finish the `Span` when the `Scope` context ends, unless
-        `finish_on_close` has been set.
+        """Mark the end of the active period for this {@link Scope},
+        updating ScopeManager#active in the process.
         """
         if self.manager.active is not self:
             return

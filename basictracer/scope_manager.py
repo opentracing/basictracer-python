@@ -29,7 +29,7 @@ from .scope import ThreadLocalScope
 
 class ThreadLocalScopeManager(ScopeManager):
     """ScopeManager implementation that stores the current active `Scope`
-    in a thread-local storage
+    using thread-local storage.
     """
     def __init__(self):
         self._tls_scope = threading.local()
@@ -37,14 +37,13 @@ class ThreadLocalScopeManager(ScopeManager):
     def activate(self, span, finish_on_close):
         """Make a `Span` instance active.
 
-        :param span: the `Span` that should become active
+        :param span: the `Span` that should become active.
         :param finish_on_close: whether span should automatically be
-            finished when `Scope#close()` is called
+            finished when `Scope#close()` is called.
 
         :return: a `Scope` instance to control the end of the active period for
             the `Span`. It is a programming error to neglect to call
-            `Scope#close()` on the returned instance. By default, `Span` will
-            automatically be finished when `Scope#close()` is called.
+            `Scope#close()` on the returned instance.
         """
         scope = ThreadLocalScope(self, span, finish_on_close)
         setattr(self._tls_scope, 'active', scope)
@@ -56,8 +55,8 @@ class ThreadLocalScopeManager(ScopeManager):
         currently active `Scope#span`.
 
         If there is a non-null `Scope`, its wrapped `Span` becomes an implicit
-        parent of any newly-created `Span` at `Tracer#start_active_span()`
-        time.
+        parent of any newly-created `Span` at `Tracer#start_span()`/
+        `Tracer#start_active_span()` time.
 
         :return: the `Scope` that is active, or `None` if not available.
         """
