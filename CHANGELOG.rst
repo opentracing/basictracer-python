@@ -3,10 +3,16 @@
 History
 -------
 
-2.2.1 (unreleased)
+2.2.2 (unreleased)
 ------------------
 
 - Nothing changed yet.
+
+
+2.2.1 (2018-02-20)
+------------------
+
+- Update OT dependency to >=1.2.1 and <2.0.
 
 
 2.2.0 (2016-09-22)
