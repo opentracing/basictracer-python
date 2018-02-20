@@ -1,4 +1,4 @@
-# Copyright (c) 2016 The OpenTracing Authors.
+# Copyright (c) 2017 The OpenTracing Authors.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -17,24 +17,35 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
 from __future__ import absolute_import
-import unittest
-from basictracer import BasicTracer
-from opentracing.harness.api_check import APICompatibilityCheckMixin
+
+from opentracing import Scope
 
 
-class APICheckBasicTracer(unittest.TestCase, APICompatibilityCheckMixin):
-    def tracer(self):
-        t = BasicTracer()
-        t.register_required_propagators()
-        return t
+class ThreadLocalScope(Scope):
+    """ThreadLocalScope is an implementation of `opentracing.Scope`
+    using thread-local storage."""
 
-    def check_baggage_values(self):
-        return True
+    def __init__(self, manager, span, finish_on_close):
+        """Initialize a `Scope` for the given `Span` object.
 
-    def is_parent(self, parent, span):
-        # use `Span` ids to check parenting
-        if parent is None:
-            return span.parent_id is None
+        :param span: the `Span` wrapped by this `Scope`.
+        :param finish_on_close: whether span should automatically be
+            finished when `Scope#close()` is called.
+        """
+        super(ThreadLocalScope, self).__init__(manager, span)
+        self._finish_on_close = finish_on_close
+        self._to_restore = manager.active
 
-        return parent.context.span_id == span.parent_id
+    def close(self):
+        """Mark the end of the active period for this {@link Scope},
+        updating ScopeManager#active in the process.
+        """
+        if self.manager.active is not self:
+            return
+
+        if self._finish_on_close:
+            self.span.finish()
+
+        setattr(self._manager._tls_scope, 'active', self._to_restore)

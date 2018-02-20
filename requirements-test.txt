@@ -3,3 +3,6 @@
 -r requirements.txt
 
 -e .[tests]
+
+# TODO: using the latest proposal version; remove that after it has been merged upstream
+-e git+https://github.com/opentracing/opentracing-python.git@v2.0.0#egg=opentracing-1.3.0
