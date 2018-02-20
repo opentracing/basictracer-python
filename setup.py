@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='basictracer',
-    version='2.2.2.dev0',
+    version='3.0.0rc1',
     author='The OpenTracing Authors',
     author_email='info@opentracing.io',
     license='MIT',
