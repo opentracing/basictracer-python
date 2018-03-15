@@ -28,4 +28,7 @@ python setup.py sdist upload -r pypi
 postrelease
 git push
 ```
+## License
+
+[MIT License](./LICENSE).
 
