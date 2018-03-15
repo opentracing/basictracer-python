@@ -30,5 +30,5 @@ git push
 ```
 ## License
 
-[Apache 2.0 License](./LICENSE).
+[MIT License](./LICENSE).
 
