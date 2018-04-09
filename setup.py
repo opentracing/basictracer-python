@@ -22,7 +22,7 @@ setup(
     platforms='any',
     install_requires=[
         'protobuf>=3.0.0b2.post2',
-        'opentracing==2.0.0rc1',
+        'opentracing==2.0.0rc2',
         'six>=1.10.0,<2.0',
     ],
     extras_require={
