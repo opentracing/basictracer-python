@@ -8,7 +8,7 @@ A python version of the "BasicTracer" reference implementation for OpenTracing.
 If you would like to get started using the Open Tracing without committing to a 
 logging service you may configure the Basic Tracer in your application:
 
-```
+```py
 import logging
 from opentracing import Tracer
 from basictracer import BasicTracer
