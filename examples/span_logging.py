@@ -1,9 +1,14 @@
-""" Example usage of the BasicTracer implementation to log spans to the console.
-Uses a custom SpanRecorder to plug into the BasicTracer.
+""" Example usage of the BasicTracer implementation which log spans to the 
+console.
 
-To with:
+Run example with command:
 
     python3 examples/span_logging.py
+
+Ensure the following pip packages are installed:
+
+    - opentracing
+    - basictracer
 """
 
 import logging
