@@ -1,5 +1,4 @@
-""" Example usage of the BasicTracer implementation which log spans to the 
-console.
+""" Example usage of the BasicTracer implementation which log spans to the console.
 
 Ensure the following pip packages are installed:
 
