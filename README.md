@@ -2,7 +2,10 @@
 
 # Basictracer Python
 
-A python version of the "BasicTracer" reference implementation for OpenTracing.
+A python version of the "BasicTracer" reference implementation for OpenTracing.  
+
+The `examples/` directory contains a sample of how the BasicTracer 
+implementation could be used to display spans in the console.
 
 ## Development
 
