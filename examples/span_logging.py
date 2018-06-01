@@ -1,14 +1,28 @@
 """ Example usage of the BasicTracer implementation which log spans to the 
 console.
 
-Run example with command:
-
-    python3 examples/span_logging.py
-
 Ensure the following pip packages are installed:
 
     - opentracing
     - basictracer
+
+Run with the command:
+
+    python3 examples/span_logging.py
+
+Example output:
+
+    [DEBUG   ] span_logging.loop[1.00e+00 S, {'i': 0}]: {'message': 'Sleeping for 1 second'}
+    [DEBUG   ] span_logging.loop[1.00e+00 S, {'i': 1}]: {'message': 'Sleeping for 1 second'}
+    [DEBUG   ] span_logging.loop[1.00e+00 S, {'i': 2}]: {'message': 'Sleeping for 1 second'}
+    [DEBUG   ] span_logging.loop[1.01e+00 S, {'i': 3}]: {'message': 'Sleeping for 1 second'}
+    [DEBUG   ] span_logging.loop[1.00e+00 S, {'i': 4}]: {'message': 'Sleeping for 1 second'}
+    [DEBUG   ] span_logging.loop[1.00e+00 S, {'i': 5}]: {'message': 'Sleeping for 1 second'}
+    [DEBUG   ] span_logging.loop[1.00e+00 S, {'i': 6}]: {'message': 'Sleeping for 1 second'}
+    [DEBUG   ] span_logging.loop[1.00e+00 S, {'i': 7}]: {'message': 'Sleeping for 1 second'}
+    [DEBUG   ] span_logging.loop[1.00e+00 S, {'i': 8}]: {'message': 'Sleeping for 1 second'}
+    [DEBUG   ] span_logging.loop[1.00e+00 S, {'i': 9}]: {'message': 'Sleeping for 1 second'}
+    [DEBUG   ] span_logging.main[1.00e+01 S]: finished
 """
 
 import logging
@@ -30,7 +44,7 @@ class LogSpanRecorder(SpanRecorder):
 
     def record_span(self, span):
         # Assemble metadata about span
-        tag = "{}[{0:.2e} S".format(span.operation_name, span.duration)
+        tag = "{0}[{1:.2e} S".format(span.operation_name, span.duration)
 
         if len(span.tags) > 0:
             tag += ", {}".format(span.tags)
