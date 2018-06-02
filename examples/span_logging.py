@@ -11,17 +11,17 @@ Run with the command:
 
 Example output:
 
-    [DEBUG   ] span_logging.loop.15018369678232335545[1.00 S i=0]: message=Sleeping for 1 second
-    [DEBUG   ] span_logging.loop.2540530114652592804[1.00 S i=1]: message=Sleeping for 1 second
-    [DEBUG   ] span_logging.loop.7574934164826234651[1.00 S i=2]: message=Sleeping for 1 second
-    [DEBUG   ] span_logging.loop.14028537569157693737[1.00 S i=3]: message=Sleeping for 1 second
-    [DEBUG   ] span_logging.loop.17246826246775210511[1.00 S i=4]: message=Sleeping for 1 second
-    [DEBUG   ] span_logging.loop.5519584931032029054[1.00 S i=5]: message=Sleeping for 1 second
-    [DEBUG   ] span_logging.loop.4988982006119943551[1.00 S i=6]: message=Sleeping for 1 second
-    [DEBUG   ] span_logging.loop.7086056123013585862[1.00 S i=7]: message=Sleeping for 1 second
-    [DEBUG   ] span_logging.loop.16476781305402772337[1.00 S i=8]: message=Sleeping for 1 second
-    [DEBUG   ] span_logging.loop.2846460487572742203[1.00 S i=9]: message=Sleeping for 1 second
-    [DEBUG   ] span_logging.main.6228059741581028099[10.03 S]: finished
+    [DEBUG   ] span_logging.loop.14644595994193200868[1.00 S parent=14464006555861026741 i=0]: message=Sleeping for 1 second
+    [DEBUG   ] span_logging.loop.1520449992154412943[1.01 S parent=14464006555861026741 i=1]: message=Sleeping for 1 second
+    [DEBUG   ] span_logging.loop.15868927260288211418[1.00 S parent=14464006555861026741 i=2]: message=Sleeping for 1 second
+    [DEBUG   ] span_logging.loop.13311248096002911557[1.00 S parent=14464006555861026741 i=3]: message=Sleeping for 1 second
+    [DEBUG   ] span_logging.loop.13408887418100893456[1.00 S parent=14464006555861026741 i=4]: message=Sleeping for 1 second
+    [DEBUG   ] span_logging.loop.2166932256275619626[1.00 S parent=14464006555861026741 i=5]: message=Sleeping for 1 second
+    [DEBUG   ] span_logging.loop.17208766771418783859[1.00 S parent=14464006555861026741 i=6]: message=Sleeping for 1 second
+    [DEBUG   ] span_logging.loop.175072314141445432[1.00 S parent=14464006555861026741 i=7]: message=Sleeping for 1 second
+    [DEBUG   ] span_logging.loop.6741939691448627555[1.00 S parent=14464006555861026741 i=8]: message=Sleeping for 1 second
+    [DEBUG   ] span_logging.loop.8035570631348486191[1.00 S parent=14464006555861026741 i=9]: message=Sleeping for 1 second
+    [DEBUG   ] span_logging.main.14464006555861026741[10.03 S]: finished
 """
 
 import logging
