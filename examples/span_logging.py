@@ -52,6 +52,11 @@ class LogSpanRecorder(SpanRecorder):
 
         bracket_items.append(duration_str)
 
+        # Parent ID
+        if span.parent_id is not None:
+            bracket_items.append("parent={}".format(span.parent_id))
+
+
         # Tags
         tags_strs = ["{}={}".format(tag, span.tags[tag]) for tag in span.tags]
         bracket_items.extend(tags_strs)
