@@ -3,7 +3,7 @@ import time
 import opentracing
 from opentracing import Format, Tracer
 from opentracing import UnsupportedFormatException
-from opentracing.ext.scope_manager import ThreadLocalScopeManager
+from opentracing.scope_managers import ThreadLocalScopeManager
 from .context import SpanContext
 from .recorder import SpanRecorder, DefaultSampler
 from .span import BasicSpan
