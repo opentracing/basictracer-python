@@ -3,9 +3,10 @@
 History
 -------
 
-3.0.0rc2 (2018-04-09)
----------------------
+3.0.0 (2018-07-10)
+------------------
 
+- Update our OT dependency to 2.0.0.
 - Implement ScopeManager for in-process propagation.
 
 
