@@ -3,6 +3,7 @@ import time
 import opentracing
 from opentracing import Format, Tracer
 from opentracing import UnsupportedFormatException
+from opentracing.scope_managers import ThreadLocalScopeManager
 from .context import SpanContext
 from .recorder import SpanRecorder, DefaultSampler
 from .span import BasicSpan
@@ -11,7 +12,7 @@ from .util import generate_id
 
 class BasicTracer(Tracer):
 
-    def __init__(self, recorder=None, sampler=None):
+    def __init__(self, recorder=None, sampler=None, scope_manager=None):
         """Initialize a BasicTracer instance.
 
         Note that the returned BasicTracer has *no* propagators registered. The
@@ -23,7 +24,10 @@ class BasicTracer(Tracer):
         with the binary carrier.
         """
 
-        super(BasicTracer, self).__init__()
+        scope_manager = ThreadLocalScopeManager() \
+            if scope_manager is None else scope_manager
+        super(BasicTracer, self).__init__(scope_manager)
+
         self.recorder = NoopRecorder() if recorder is None else recorder
         self.sampler = DefaultSampler(1) if sampler is None else sampler
         self._propagators = {}
@@ -44,13 +48,34 @@ class BasicTracer(Tracer):
         self.register_propagator(Format.HTTP_HEADERS, TextPropagator())
         self.register_propagator(Format.BINARY, BinaryPropagator())
 
-    def start_span(
-            self,
-            operation_name=None,
-            child_of=None,
-            references=None,
-            tags=None,
-            start_time=None):
+    def start_active_span(self,
+                          operation_name,
+                          child_of=None,
+                          references=None,
+                          tags=None,
+                          start_time=None,
+                          ignore_active_span=False,
+                          finish_on_close=True):
+
+        # create a new Span
+        span = self.start_span(
+            operation_name=operation_name,
+            child_of=child_of,
+            references=references,
+            tags=tags,
+            start_time=start_time,
+            ignore_active_span=ignore_active_span,
+        )
+
+        return self.scope_manager.activate(span, finish_on_close)
+
+    def start_span(self,
+                   operation_name=None,
+                   child_of=None,
+                   references=None,
+                   tags=None,
+                   start_time=None,
+                   ignore_active_span=False):
 
         start_time = time.time() if start_time is None else start_time
 
@@ -63,6 +88,12 @@ class BasicTracer(Tracer):
         elif references is not None and len(references) > 0:
             # TODO only the first reference is currently used
             parent_ctx = references[0].referenced_context
+
+        # retrieve the active SpanContext
+        if not ignore_active_span and parent_ctx is None:
+            scope = self.scope_manager.active
+            if scope is not None:
+                parent_ctx = scope.span.context
 
         # Assemble the child ctx
         ctx = SpanContext(span_id=generate_id())

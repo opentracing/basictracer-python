@@ -3,10 +3,10 @@
 History
 -------
 
-2.2.2 (unreleased)
-------------------
+3.0.0rc2 (2018-04-09)
+---------------------
 
-- Nothing changed yet.
+- Implement ScopeManager for in-process propagation.
 
 
 2.2.1 (2018-02-20)
