@@ -27,6 +27,17 @@ def test_propagation():
         assert extracted_ctx.sampled == sp.context.sampled
         assert extracted_ctx.baggage == sp.context.baggage
 
+    # Test string value of sampled field
+    headers = {}
+    tracer.inject(sp.context, Format.HTTP_HEADERS, headers)
+    headers['ot-tracer-sampled'] = '0'
+    span_ctx0 = tracer.extract(Format.HTTP_HEADERS, headers)
+    assert not span_ctx0.sampled
+
+    headers['ot-tracer-sampled'] = '1'
+    span_ctx1 = tracer.extract(Format.HTTP_HEADERS, headers)
+    assert span_ctx1.sampled
+
 
 def test_start_span():
     """ Test in process child span creation."""
