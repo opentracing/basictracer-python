@@ -37,9 +37,9 @@ class TextPropagator(Propagator):
                 trace_id = int(v, 16)
                 count += 1
             elif k == field_name_sampled:
-                if v == str(True).lower():
+                if v in ('true', '1'):
                     sampled = True
-                elif v == str(False).lower():
+                elif v in ('false', '0'):
                     sampled = False
                 else:
                     raise SpanContextCorruptedException()
