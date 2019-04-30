@@ -15,6 +15,11 @@ make bootstrap
 make test
 ```
 
+You can use [tox](https://tox.readthedocs.io) to run tests as well.
+```bash
+tox
+```
+
 ### Releases
 
 Before new release, add a summary of changes since last version to CHANGELOG.rst
