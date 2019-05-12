@@ -3,10 +3,12 @@
 History
 -------
 
-3.0.1 (unreleased)
+3.1.0 (2019-05-12)
 ------------------
 
-- Nothing changed yet.
+- Unpin OpenTracing dependency and change to a range (#40) <Nathan Hsieh>
+- Add support for Python 3.5+ (#39) <Aliaksei Urbanski>
+- Include 0,1 as acceptable sampled value (#37) <Dominik Janků>
 
 
 3.0.0 (2018-07-10)
