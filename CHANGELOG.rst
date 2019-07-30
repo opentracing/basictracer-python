@@ -6,7 +6,8 @@ History
 3.1.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- TextPropagator.extract raises SpanContextCorruptedException with
+  more meaningful error messages.
 
 
 3.1.0 (2019-05-12)
@@ -100,4 +101,3 @@ History
 ----------------
 
 - Initial public API
-
