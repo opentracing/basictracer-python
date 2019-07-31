@@ -79,9 +79,9 @@ def test_span_corrupted_invalid_sampled_value():
 
     # Given a carrier with invalid "ot-tracer-sampled" value
     headers = {
-        "ot-tracer-spanid": 'deadbeef',
-        "ot-tracer-sampled": 'notbool',
-        "ot-tracer-traceid": '1c3b00da',
+        'ot-tracer-spanid': 'deadbeef',
+        'ot-tracer-sampled': 'notbool',
+        'ot-tracer-traceid': '1c3b00da',
     }
 
     # When .extract is called
@@ -89,7 +89,10 @@ def test_span_corrupted_invalid_sampled_value():
         tracer.extract(Format.TEXT_MAP, headers)
 
     # Then it should raise SpanContextCorruptedException
-    assert str(exc.value) == "ot-tracer-sampled got an invalid value 'notbool', should be one of 'true', 'false', '0', '1'"
+    assert str(exc.value) == (
+        "ot-tracer-sampled got an invalid value 'notbool', "
+        "should be one of 'true', 'false', '0', '1'"
+    )
 
 
 def test_span_corrupted_invalid_spanid_value():
@@ -98,9 +101,9 @@ def test_span_corrupted_invalid_spanid_value():
 
     # Given a carrier with invalid "ot-tracer-spanid" value
     headers = {
-        "ot-tracer-spanid": 'nothex',
-        "ot-tracer-sampled": 'false',
-        "ot-tracer-traceid": '1c3b00da',
+        'ot-tracer-spanid': 'nothex',
+        'ot-tracer-sampled': 'false',
+        'ot-tracer-traceid': '1c3b00da',
     }
 
     # When .extract is called
@@ -108,18 +111,20 @@ def test_span_corrupted_invalid_spanid_value():
         tracer.extract(Format.TEXT_MAP, headers)
 
     # Then it should raise SpanContextCorruptedException
-    assert str(exc.value) == "ot-tracer-spanid got an invalid hexadecimal value 'nothex'"
+    assert str(exc.value) == (
+        "ot-tracer-spanid got an invalid hexadecimal value 'nothex'"
+    )
 
 
 def test_span_corrupted_invalid_traceid_value():
     tracer = BasicTracer()
     tracer.register_required_propagators()
 
-    # Given a carrier with invalid "ot-tracer-traceid" value
+    # Given a carrier with invalid 'ot-tracer-traceid' value
     headers = {
-        "ot-tracer-traceid": 'nothex',
-        "ot-tracer-sampled": 'false',
-        "ot-tracer-spanid": '1c3b00da',
+        'ot-tracer-traceid': 'nothex',
+        'ot-tracer-sampled': 'false',
+        'ot-tracer-spanid': '1c3b00da',
     }
 
     # When .extract is called
@@ -127,4 +132,6 @@ def test_span_corrupted_invalid_traceid_value():
         tracer.extract(Format.TEXT_MAP, headers)
 
     # Then it should raise SpanContextCorruptedException
-    assert str(exc.value) == "ot-tracer-traceid got an invalid hexadecimal value 'nothex'"
+    assert str(exc.value) == (
+        "ot-tracer-traceid got an invalid hexadecimal value 'nothex'"
+    )

@@ -16,7 +16,7 @@ def parse_hex_for_field(field_name, value):
     """parses the hexadecimal value of a field into an integer.
     Raises SpanContextCorruptedException in case of failure
     """
-    msg = "{field_name} got an invalid hexadecimal value {value!r}"
+    msg = '{field_name} got an invalid hexadecimal value {value!r}'
     msg = msg.format(field_name=field_name, value=value)
     try:
         return int(value, 16)
@@ -31,8 +31,8 @@ def parse_boolean_for_field(field_name, value):
         return False
 
     msg = (
-        "{field} got an invalid value {value!r}, "
-        "should be one of 'true', 'false', '0', '1'"
+        '{field} got an invalid value {value!r}, '
+        "should be one of \'true\', \'false\', \'0\', \'1\'"
     )
     raise SpanContextCorruptedException(msg.format(
         value=value,
@@ -72,8 +72,8 @@ class TextPropagator(Propagator):
 
         if count != field_count:
             msg = (
-                "expected to parse {field_count} fields"
-                ", but parsed {count} instead"
+                'expected to parse {field_count} fields'
+                ', but parsed {count} instead'
             )
             raise SpanContextCorruptedException(msg.format(
                 field_count=field_count,
