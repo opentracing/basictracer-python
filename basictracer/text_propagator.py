@@ -16,15 +16,18 @@ def parse_hex_for_field(field_name, value):
     """parses the hexadecimal value of a field into an integer.
     Raises SpanContextCorruptedException in case of failure
     """
-    msg = '{field_name} got an invalid hexadecimal value {value!r}'
-    msg = msg.format(field_name=field_name, value=value)
     try:
         return int(value, 16)
     except ValueError:
+        msg = '{field_name} got an invalid hexadecimal value {value!r}'
+        msg = msg.format(field_name=field_name, value=value)
         raise SpanContextCorruptedException(msg)
 
 
 def parse_boolean_for_field(field_name, value):
+    """parses the string value of a field into a boolean.
+    Raises SpanContextCorruptedException in case of failure
+    """
     if value in ('true', '1'):
         return True
     elif value in ('false', '0'):
