@@ -12,6 +12,37 @@ field_name_sampled = prefix_tracer_state + 'sampled'
 field_count = 3
 
 
+def parse_hex_for_field(field_name, value):
+    """parses the hexadecimal value of a field into an integer.
+    Raises SpanContextCorruptedException in case of failure
+    """
+    try:
+        return int(value, 16)
+    except ValueError:
+        msg = '{field_name} got an invalid hexadecimal value {value!r}'
+        msg = msg.format(field_name=field_name, value=value)
+        raise SpanContextCorruptedException(msg)
+
+
+def parse_boolean_for_field(field_name, value):
+    """parses the string value of a field into a boolean.
+    Raises SpanContextCorruptedException in case of failure
+    """
+    if value in ('true', '1'):
+        return True
+    elif value in ('false', '0'):
+        return False
+
+    msg = (
+        '{field} got an invalid value {value!r}, '
+        "should be one of \'true\', \'false\', \'0\', \'1\'"
+    )
+    raise SpanContextCorruptedException(msg.format(
+        value=value,
+        field=field_name_sampled
+    ))
+
+
 class TextPropagator(Propagator):
     """A BasicTracer Propagator for Format.TEXT_MAP."""
 
@@ -31,24 +62,26 @@ class TextPropagator(Propagator):
             v = carrier[k]
             k = k.lower()
             if k == field_name_span_id:
-                span_id = int(v, 16)
+                span_id = parse_hex_for_field(field_name_span_id, v)
                 count += 1
             elif k == field_name_trace_id:
-                trace_id = int(v, 16)
+                trace_id = parse_hex_for_field(field_name_trace_id, v)
                 count += 1
             elif k == field_name_sampled:
-                if v in ('true', '1'):
-                    sampled = True
-                elif v in ('false', '0'):
-                    sampled = False
-                else:
-                    raise SpanContextCorruptedException()
+                sampled = parse_boolean_for_field(field_name_sampled, v)
                 count += 1
             elif k.startswith(prefix_baggage):
                 baggage[k[len(prefix_baggage):]] = v
 
         if count != field_count:
-            raise SpanContextCorruptedException()
+            msg = (
+                'expected to parse {field_count} fields'
+                ', but parsed {count} instead'
+            )
+            raise SpanContextCorruptedException(msg.format(
+                field_count=field_count,
+                count=count,
+            ))
 
         return SpanContext(
             span_id=span_id,

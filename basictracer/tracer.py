@@ -77,6 +77,9 @@ class BasicTracer(Tracer):
                    start_time=None,
                    ignore_active_span=False):
 
+        if isinstance(references, opentracing.Reference):
+            references = [references]
+
         start_time = time.time() if start_time is None else start_time
 
         # See if we have a parent_ctx in `references`
@@ -87,7 +90,14 @@ class BasicTracer(Tracer):
                 else child_of.context)
         elif references is not None and len(references) > 0:
             # TODO only the first reference is currently used
-            parent_ctx = references[0].referenced_context
+            first_ref = references[0]
+            if not isinstance(first_ref, opentracing.Reference):
+                msg = (
+                    'references[0] should be a opentracing.Reference '
+                    'objects, got %r instead'
+                )
+                raise TypeError(msg % first_ref)
+            parent_ctx = first_ref.referenced_context
 
         # retrieve the active SpanContext
         if not ignore_active_span and parent_ctx is None:

@@ -1,5 +1,9 @@
 import pytest
-from opentracing import Format, UnsupportedFormatException
+from opentracing import (
+    Format,
+    UnsupportedFormatException,
+    SpanContextCorruptedException,
+)
 from basictracer import BasicTracer
 
 
@@ -52,3 +56,82 @@ def test_start_span():
     assert child.context.sampled == sp.context.sampled
     assert child.context.baggage == sp.context.baggage
     assert child.parent_id == sp.context.span_id
+
+
+def test_span_corrupted_missing_fields():
+    tracer = BasicTracer()
+    tracer.register_required_propagators()
+
+    # Given an empty carrier
+    headers = {}
+
+    # When .extract is called
+    with pytest.raises(SpanContextCorruptedException) as exc:
+        tracer.extract(Format.TEXT_MAP, headers)
+
+    # Then it should raise SpanContextCorruptedException
+    assert str(exc.value) == 'expected to parse 3 fields, but parsed 0 instead'
+
+
+def test_span_corrupted_invalid_sampled_value():
+    tracer = BasicTracer()
+    tracer.register_required_propagators()
+
+    # Given a carrier with invalid "ot-tracer-sampled" value
+    headers = {
+        'ot-tracer-spanid': 'deadbeef',
+        'ot-tracer-sampled': 'notbool',
+        'ot-tracer-traceid': '1c3b00da',
+    }
+
+    # When .extract is called
+    with pytest.raises(SpanContextCorruptedException) as exc:
+        tracer.extract(Format.TEXT_MAP, headers)
+
+    # Then it should raise SpanContextCorruptedException
+    assert str(exc.value) == (
+        "ot-tracer-sampled got an invalid value 'notbool', "
+        "should be one of 'true', 'false', '0', '1'"
+    )
+
+
+def test_span_corrupted_invalid_spanid_value():
+    tracer = BasicTracer()
+    tracer.register_required_propagators()
+
+    # Given a carrier with invalid "ot-tracer-spanid" value
+    headers = {
+        'ot-tracer-spanid': 'nothex',
+        'ot-tracer-sampled': 'false',
+        'ot-tracer-traceid': '1c3b00da',
+    }
+
+    # When .extract is called
+    with pytest.raises(SpanContextCorruptedException) as exc:
+        tracer.extract(Format.TEXT_MAP, headers)
+
+    # Then it should raise SpanContextCorruptedException
+    assert str(exc.value) == (
+        "ot-tracer-spanid got an invalid hexadecimal value 'nothex'"
+    )
+
+
+def test_span_corrupted_invalid_traceid_value():
+    tracer = BasicTracer()
+    tracer.register_required_propagators()
+
+    # Given a carrier with invalid 'ot-tracer-traceid' value
+    headers = {
+        'ot-tracer-traceid': 'nothex',
+        'ot-tracer-sampled': 'false',
+        'ot-tracer-spanid': '1c3b00da',
+    }
+
+    # When .extract is called
+    with pytest.raises(SpanContextCorruptedException) as exc:
+        tracer.extract(Format.TEXT_MAP, headers)
+
+    # Then it should raise SpanContextCorruptedException
+    assert str(exc.value) == (
+        "ot-tracer-traceid got an invalid hexadecimal value 'nothex'"
+    )
