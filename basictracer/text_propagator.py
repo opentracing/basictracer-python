@@ -73,6 +73,13 @@ class TextPropagator(Propagator):
             elif k.startswith(prefix_baggage):
                 baggage[k[len(prefix_baggage):]] = v
 
+        if count == 0:
+            if len(baggage) > 0:
+                raise SpanContextCorruptedException(
+                                'found baggage without required fields')
+
+            return None
+
         if count != field_count:
             msg = (
                 'expected to parse {field_count} fields'
