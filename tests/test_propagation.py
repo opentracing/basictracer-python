@@ -58,7 +58,7 @@ def test_start_span():
     assert child.parent_id == sp.context.span_id
 
 
-def test_span_corrupted_missing_fields():
+def test_span_missing_all_fields():
     tracer = BasicTracer()
     tracer.register_required_propagators()
 
@@ -66,11 +66,79 @@ def test_span_corrupted_missing_fields():
     headers = {}
 
     # When .extract is called
+    ctx = tracer.extract(Format.TEXT_MAP, headers)
+
+    # Then it should return None
+    assert ctx is None
+
+
+def test_span_missing_all_headers():
+    tracer = BasicTracer()
+    tracer.register_required_propagators()
+
+    # Given an carrier with no ot-headers
+    headers = {
+       'Content-Type': 'text/html',
+       'Authorization': 'Digest 123456',
+    }
+
+    # When .extract is called
+    ctx = tracer.extract(Format.TEXT_MAP, headers)
+
+    # Then it should return None
+    assert ctx is None
+
+
+def test_span_missing_one_field():
+    tracer = BasicTracer()
+    tracer.register_required_propagators()
+
+    # Given a carrier missing ot-tracer-sampled:
+    headers = {
+        'ot-tracer-spanid': 'deadbeaf',
+        'ot-tracer-traceid': '1c3b00da',
+    }
+
+    # When .extract is called
     with pytest.raises(SpanContextCorruptedException) as exc:
         tracer.extract(Format.TEXT_MAP, headers)
 
     # Then it should raise SpanContextCorruptedException
-    assert str(exc.value) == 'expected to parse 3 fields, but parsed 0 instead'
+    assert str(exc.value) == 'expected to parse 3 fields, but parsed 2 instead'
+
+
+def test_span_missing_two_fields():
+    tracer = BasicTracer()
+    tracer.register_required_propagators()
+
+    # Given a carrier with only ot-tracer-traceid:
+    headers = {
+        'ot-tracer-traceid': '1c3b00da',
+    }
+
+    # When .extract is called
+    with pytest.raises(SpanContextCorruptedException) as exc:
+        tracer.extract(Format.TEXT_MAP, headers)
+
+    # Then it should raise SpanContextCorruptedException
+    assert str(exc.value) == 'expected to parse 3 fields, but parsed 1 instead'
+
+
+def test_span_with_baggage_only():
+    tracer = BasicTracer()
+    tracer.register_required_propagators()
+
+    # Given a carrier with only baggage:
+    headers = {
+        'ot-baggage-example': 'ok',
+    }
+
+    # When .extract is called
+    with pytest.raises(SpanContextCorruptedException) as exc:
+        tracer.extract(Format.TEXT_MAP, headers)
+
+    # Then it should raise SpanContextCorruptedException
+    assert str(exc.value) == 'found baggage without required fields'
 
 
 def test_span_corrupted_invalid_sampled_value():
