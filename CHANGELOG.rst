@@ -3,14 +3,17 @@
 History
 -------
 
-3.1.1 (unreleased)
+3.2.0 (2021-04-12)
 ------------------
 
-- TextPropagator.extract raises SpanContextCorruptedException with
-  more meaningful error messages.
-
-- Tracer.start_span validates type of ``references=`` preventing
-  problems for users migrating code from opentracing==1.3.0.
+- setup.py: Remove test dependency doubles (#44) <John Vandenberg>
+- Do not throw error when no tracing headers are sent (#43) <Logan Capaldo>
+- Stop testing with Python 3.5 <Yuri Shkuro>
+- Provide meaningful error messages when failed to extract headers from carrier (#42) <Gabriel Falcão>
+  - TextPropagator.extract raises SpanContextCorruptedException with
+    more meaningful error messages.
+  - Tracer.start_span validates type of ``references=`` preventing
+    problems for users migrating code from opentracing==1.3.0.
 
 
 3.1.0 (2019-05-12)
