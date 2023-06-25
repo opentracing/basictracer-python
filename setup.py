@@ -32,10 +32,8 @@ setup(
         'tests': [
             'flake8',
             'flake8-quotes',
-            'mock<1.1.0',
             'pytest',
             'pytest-cov',
-            'pytest-mock',
             'Sphinx',
             'sphinx_rtd_theme'
         ]
